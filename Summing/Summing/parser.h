@@ -1,15 +1,24 @@
 #pragma once
 
+/*
+    File description:
+     This file contain the API for parsing the input traces
+*/
+
+#ifndef PARSER_H
+#define PARSER_H
+
+/* Includes: */
 #include <string>
-#include <exception>
 
 using std::string;
 
 /*
     Class name: Time
 
-    Description: The class contains the time of a package
-    that was deliverd
+    Description: 
+     The class contains the time of a package
+     that was deliverd
  */
 class Time
 {
@@ -26,14 +35,15 @@ public:
 
     /* Constructor: */
 
-    Time(string time);
+    Time(const string& time);
 
     /* API: */
 
     /* 
         Function name: Time::getHour
         
-        Description: An API to get the hour of the deliver
+        Description: 
+         An API to get the hour of the deliver
 
         Parameters:
          None
@@ -46,7 +56,8 @@ public:
     /*
         Function name: Time::getMinute
 
-        Description: An API to get the minute of the deliver
+        Description: 
+         An API to get the minute of the deliver
 
         Parameters:
          None
@@ -59,7 +70,8 @@ public:
     /*
         Function name: Time::getSecond
 
-        Description: An API to get the second of the deliver
+        Description: 
+         An API to get the second of the deliver
 
         Parameters:
          None
@@ -70,23 +82,25 @@ public:
     double getSecond() const;
 
     /*
-    Function name: Time::getTimeAsString
+        Function name: Time::getTimeAsString
 
-    Description: An API to get a string describing the time of the deliver
+        Description: 
+         An API to get a string describing the time of the deliver
 
-    Parameters:
-     None
+        Parameters:
+         None
 
-    Return values:
-     A string describing the time of the deliver
+        Return values:
+         A string describing the time of the deliver
     */
-    string getTimeAsString();
+    string getTimeAsString() const;
 };
 
 /*
-Class name: Package
+    Class name: Package
 
-Description: This class identifies a package that was delivered
+    Description: 
+     This class identifies a package that was delivered
 */
 class Package
 {
@@ -108,93 +122,102 @@ public:
     /* API: */
 
     /*
-    Function name: Package::getHour
+        Function name: Package::getHour
 
-    Description: An API to get the hour of the deliver
+        Description: 
+         An API to get the hour of the deliver
 
-    Parameters:
-     None
+        Parameters:
+         None
 
-    Return values:
-     The hour of the deliver
+        Return values:
+         The hour of the deliver
     */
     uint8_t getHour() const;
 
     /*
-    Function name: Package::getMinute
+        Function name: Package::getMinute
 
-    Description: An API to get the minute of the deliver
+        Description: 
+         An API to get the minute of the deliver
 
-    Parameters:
-     None
+        Parameters:
+         None
 
-    Return values:
-     The minute of the deliver
+        Return values:
+         The minute of the deliver
     */
     uint8_t getMinute() const;
 
     /*
-    Function name: Package::getSecond
+        Function name: Package::getSecond
 
-    Description: An API to get the second of the deliver
+        Description: 
+         An API to get the second of the deliver
 
-    Parameters:
-     None
+        Parameters:
+         None
 
-    Return values:
-     The second of the deliver
+        Return values:
+         The second of the deliver
     */
     double getSecond() const;
 
     /*
-    Function name: Package::getTimeAsString
+        Function name: Package::getTimeAsString
 
-    Description: An API to get a string describing the time of the deliver
+        Description: 
+         An API to get a string describing the time of the deliver
 
-    Parameters:
-     None
+        Parameters:
+         None
 
-    Return values:
-     A string describing the time of the deliver
+        Return values:
+         A string describing the time of the deliver
     */
-    string getTimeAsString();
+    string getTimeAsString() const;
 
     /*
-    Function name: Package::getIp
+        Function name: Package::getIp
 
-    Description: An API to get a string describing the time of the deliver
+        Description: 
+         An API to get a string describing the time of the deliver
 
-    Parameters:
-     None
+        Parameters:
+         None
 
-    Return values:
-     A string describing the ip address
+        Return values:
+         A string describing the ip address
     */
-    string getIp();
+    string getIp() const;
 
     /*
-    Function name: Package::getPort
+        Function name: Package::getPort
 
-    Description: An API to get a string describing the time of the deliver
+        Description: 
+         An API to get a string describing the time of the deliver
 
-    Parameters:
-    None
+        Parameters:
+         None
 
-    Return values:
-     A string describing the port
+        Return values:
+         The port number
     */
-    uint16_t getPort();
+    uint16_t getPort() const;
 
     /*
-    Function name: Package::getSize
+        Function name: Package::getSize
 
-    Description: An API to get a string describing the time of the deliver
+        Description: 
+         An API to get a string describing the time of the deliver
 
-    Parameters:
-    None
+        Parameters:
+         None
 
-    Return values:
-    A string describing the port
+        Return values:
+         The size of the package
     */
-    uint64_t getSize();
+    uint64_t getSize() const;
 };
+
+#endif

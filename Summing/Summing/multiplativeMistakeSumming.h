@@ -1,0 +1,6 @@
+#pragma once
+
+#ifndef MULOMISTAKE_ACCURATESUMMING
+#define MULOMISTAKE_ACCURATESUMMING
+
+#endif
