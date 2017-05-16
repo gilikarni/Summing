@@ -1,15 +1,16 @@
 #pragma once
 
 /* 
-    File description:
-     This file describes the API of an algorithm of summing on a sliding window in 
-     size W of elements with size smaller then R and larger than 0.
-     This is a naive algorithm which saves the last W elements and the mean of those 
-     elements. Every time that we need to update the sum we substruct the oldest element
-     fron the sum and add a new one.
-     All the function in this API perform:
-     O(1) - time complicity 
-     O(W*R) - memory complicity
+ * File description:
+ *  This file describes the API of an algorithm of summing on a sliding window in
+ *  size W of elements with size smaller then R and larger than 0.
+ *  This is a naive algorithm which saves the last W elements and the mean of those
+ *  elements. Every time that we need to update the sum we subtract the oldest element
+ *  from the sum and add a new one.
+ *
+ * All the function in this API perform:
+ *  O(1) - time complicity
+ *  O(W*R) - memory complicity
 */
 
 #ifndef NOMISTAKE_ACCURATESUMMING
@@ -29,7 +30,7 @@ class ExactSumming
     const uint64_t window;
 
     /* The average of the window */
-    uint64_t mean;
+    uint16_t mean;
 
     /* The last "window" elemants */
     queue<uint64_t> elements;
@@ -40,38 +41,41 @@ class ExactSumming
 
 public:
 
-    /* Constractors: */
+    /* Constructors: */
 
-    ExactSumming(const uint64_t& _range, const uint16_t& _window);
+    ExactSumming(
+    		const uint64_t& _range,
+			const uint16_t& _window);
 
     /* API: */
     
     /*
-    Function name: ExactSumming::update
-
-    Description: 
-     Update the mean of the sliding window, i.e, Adding the new 
-     element ot the sum and ommit the oldest element.
-
-    Parameters:
-     packatSize - The size of the new element
-
-    Return values:
-     None
+     * Function name: ExactSumming::update
+     *
+     * Description:
+     *  Update the mean of the sliding window, i.e, Adding the new
+     *  element to the sum and omit the oldest element.
+     *
+     * Parameters:
+     *  packatSize - The size of the new element
+     *
+     * Return values:
+     *  None
     */
-    void update(const uint64_t& packatSize);
+    void update(
+    		const uint64_t& packatSize);
 
     /*
-    Function name: ExactSumming::query
-
-    Description:
-     Return the mean of the last "window" elements
-
-    Parameters:
-     None
-
-    Return values:
-     The mean of the last "window" elements
+     * Function name: ExactSumming::query
+     *
+     * Description:
+     *  Return the mean of the last "window" elements
+     *
+     * Parameters:
+     *  None
+     *
+     * Return values:
+     *  The mean of the last "window" elements
     */
     uint64_t query() const;
 };

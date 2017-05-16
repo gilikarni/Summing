@@ -1,5 +1,11 @@
 #pragma once
 
+/*
+ * File description:
+ *
+ *
+*/
+
 #ifndef NOMISTAKE_SLACKSUMMING
 #define NOMISTAKE_SLACKSUMMING
 
