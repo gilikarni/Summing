@@ -16,10 +16,6 @@ using std::bad_alloc;
 #define SECOND_END 14
 
 /* Constractors: */
-//Time::Time(const string& time) :
-//    hour(atoi(time.substr(HOUR_START, HOUR_END).c_str)),
-//    minute(atoi(time.substr(MINUTE_START, MINUTE_END).c_str)),
-//    second(atof(time.substr(SECOND_START, SECOND_END).c_str)){}
 
 /* Static functions: */
 
