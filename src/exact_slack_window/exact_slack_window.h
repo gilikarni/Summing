@@ -1,4 +1,3 @@
-#pragma once
 
 /*
  * File description:
@@ -11,10 +10,11 @@
 
 /* Includes: */
 #include<queue>
+#include <cstdint>
 
 using std::queue;
 
-class ExactSlackySumming
+class ExactSlackSumming
 {
     /* The range of the sizes */
     const uint64_t range;
@@ -42,6 +42,8 @@ class ExactSlackySumming
 public:
 
     /* Contructors: */
+    ExactSlackSumming(const uint64_t& r, const uint64_t& w) :
+    	range(r), window(w) {}
 
     /* API: */
 };

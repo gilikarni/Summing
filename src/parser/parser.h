@@ -1,4 +1,3 @@
-#pragma once
 
 /*
     File description:

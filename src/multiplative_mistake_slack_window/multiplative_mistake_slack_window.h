@@ -1,4 +1,3 @@
-#pragma once
 
 #ifndef MULOMISTAKE_SLACKSUMMING
 #define MULOMISTAKE_SLACKSUMMING

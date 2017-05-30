@@ -1,4 +1,3 @@
-#pragma once
 
 /* 
  * File description:
@@ -18,6 +17,7 @@
 
 /* Includes: */
 #include <queue>
+#include <cstdint>
 
 using std::queue;
 
