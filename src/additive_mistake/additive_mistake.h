@@ -3,10 +3,9 @@
  * File description:
  *  This file describes the API of an algorithm of summing on a sliding window. The
  *  window size is the W, and the elements are in range [0,R].
- *  This algorithm sums every T elements divided by R at a precision of v digits in
- *  a variable y. After the arriving of T elements, after summing T elements, y is added
- *  to the total mean and compressed to a single bit, if entered to queue of k elements. The last element
- *  in the queue is popped out and subtracted from the mean. - TODO - fix, this is not correct
+ *  When a new element arrive we divide it by R and then add it to a sum - y.
+ *  After adding T elements to the sum, check if it is bigger then T, if so turn on the
+ *  bit b. assign y <- y - b*T, B <- B - b.
 */
 
 #ifndef ADDOMISTAKE_ACCURATESUMMING
