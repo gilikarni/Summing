@@ -1,8 +1,12 @@
 
 /*
  * File description:
- *
- *
+ *  Each time a new packet arrives we add it's size to a sum y.
+ *  Every c = tau * w (w is the size of the window, tau is the percentage of
+ *  the change in the window size), we add y to a queue. then subtract the oldest
+ *  element from the mean and y to the mean.
+ *  If we need to answer a query, we return the sum of the mean and y, and c, how
+ *  many elements were added to y.
 */
 
 #ifndef NOMISTAKE_SLACKSUMMING
@@ -31,7 +35,7 @@ class ExactSlackSumming
 
     /* The percentege of the window size which is 
     aloud to add*/
-    uint8_t tau;
+    const double tau;
 
     /* The sum of the last elements */
     uint64_t lastElements;
@@ -39,13 +43,50 @@ class ExactSlackSumming
     /* 1/tau sums of window*tau elements from the elements delivered */
     queue<uint64_t> elements;
 
+    /* The number of elements that was summed at the last iteration */
+    uint64_t diff;
+
 public:
 
     /* Contructors: */
-    ExactSlackSumming(const uint64_t& r, const uint64_t& w) :
-    	range(r), window(w) {}
+
+    ExactSlackSumming(
+    		const uint64_t& r,
+			const uint64_t& w,
+			const double& t) :
+    	range(r), window(w), tau(t) {}
 
     /* API: */
+
+    /*
+     * Function name: ExactSlackSumming::update
+     *
+     * Description:
+     *  Update the mean of the sliding window.
+     *
+     * Parameters:
+     *  packatSize - The size of the new element
+     *
+     * Return values:
+     *  None
+    */
+    void update(
+    		const uint16_t& packetSize);
+
+    /*
+     * Function name: ExactSlackSumming::query
+     *
+     * Description:
+     *  Return the mean of the last "window" elements
+     *
+     * Parameters:
+     *  windowSizeMistake - output. The difference between the size of the
+     *  window that was summed and w.
+     *
+     * Return values:
+     *  The mean of the last "window" elements
+    */
+    uint64_t query(uint64_t& windowSizeMistake) const;
 };
 
 #endif

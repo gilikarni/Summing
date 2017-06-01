@@ -63,7 +63,7 @@ public:
      *  None
     */
     void update(
-    		const uint64_t& packatSize);
+    		const uint16_t& packatSize);
 
     /*
      * Function name: ExactSumming::query
