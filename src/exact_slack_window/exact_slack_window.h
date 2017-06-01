@@ -53,8 +53,7 @@ public:
     ExactSlackSumming(
     		const uint64_t& r,
 			const uint64_t& w,
-			const double& t) :
-    	range(r), window(w), tau(t) {}
+			const double& t);
 
     /* API: */
 
@@ -84,7 +83,7 @@ public:
      *  window that was summed and w.
      *
      * Return values:
-     *  The mean of the last "window" elements
+     *  The mean of the last "window" + windowSizeMistake elements
     */
     uint64_t query(uint64_t& windowSizeMistake) const;
 };
