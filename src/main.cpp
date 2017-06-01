@@ -1,12 +1,10 @@
-/*
- * main.cpp
- *
- *  Created on: May 26, 2017
- *      Author: compm
- */
+
+/* Includes: */
+#include <iostream>
 
 int main()
 {
+	std::cout << "Working" <<std::endl;
 	return 0;
 }
 

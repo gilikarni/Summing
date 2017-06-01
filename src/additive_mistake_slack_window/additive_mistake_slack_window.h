@@ -13,8 +13,9 @@
 
 /* Includes: */
 #include <queue>
+#include <cstdint>
 
-using namespace std::queue;
+using namespace std;
 
 class AdditiveSlackMistake
 {
@@ -37,6 +38,10 @@ class AdditiveSlackMistake
 	 * The number of elements summed to currentSum
 	 */
 	uint16_t offset;
+
+    /* The minimum between the number of elements
+    that was already seen and "window" */
+    uint64_t numberOfElementsSeen;
 public:
 
 	/* Constructors: */
