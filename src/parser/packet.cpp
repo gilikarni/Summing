@@ -1,11 +1,19 @@
+/*
+ * packet.cpp
+ *
+ *  Created on: Jun 2, 2017
+ *      Author: compm
+ */
+
 /* Includes: */
-#include "parser.h"
+#include "packet.h"
 #include <string>
 #include <exception>
 
 /* Namespace: */
 using std::string;
 using std::bad_alloc;
+using std::stringstream;
 
 /* Macros: */
 
@@ -24,13 +32,21 @@ using std::bad_alloc;
  * 16:00:00.000031 137.227.47.182.80 1448
  */
 
+/* Constructors: */
 
-/* Packet functions: */
-
-/* Constractors: */
-
-
+Packet::Packet(string trace)
+{
+	stringstream stream(trace);
+	string t, s;
+	stream >> t;
+	time(t);
+	stream >> ip;
+	stream >> s;
+	size(atoll(s));
+}
 
 /* Static functions: */
 
 /* API: */
+
+
