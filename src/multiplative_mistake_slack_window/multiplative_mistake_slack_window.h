@@ -4,6 +4,9 @@
 
 /*
  * File description:
+ *  Each time a new packet arrives we it's value to y. Every w * tau packets
+ *  we add a rounded variation of y to the total mean and subtract the oldest
+ *  addition.
 */
 
 /* Includes: */
