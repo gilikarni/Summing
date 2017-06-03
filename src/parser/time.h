@@ -22,11 +22,11 @@ using std::string;
  */
 class Time
 {
-	/* The hour that the package was recieved */
+	/* The hour that the package was received */
 	uint8_t hour;
-	/* The minute that the package was recieved */
+	/* The minute that the package was received */
 	uint8_t minute;
-	/* The second that the package was recieved */
+	/* The second that the package was received */
 	double second;
 	/* A string describing the time of the deliver */
 	string timeStr;

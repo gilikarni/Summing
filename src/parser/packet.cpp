@@ -49,4 +49,105 @@ Packet::Packet(string trace)
 
 /* API: */
 
+/*
+ Function name: Packet::getHour
+
+ Description:
+ An API to get the hour of the deliver
+
+ Parameters:
+ None
+
+ Return values:
+ The hour of the deliver
+ */
+uint8_t Packet::getHour() const
+{
+	return time.getHour();
+}
+
+/*
+ Function name: Packet::getMinute
+
+ Description:
+ An API to get the minute of the deliver
+
+ Parameters:
+ None
+
+ Return values:
+ The minute of the deliver
+ */
+uint8_t Packet::getMinute() const
+{
+	return time.getMinute();
+}
+
+/*
+ Function name: Packet::getSecond
+
+ Description:
+ An API to get the second of the deliver
+
+ Parameters:
+ None
+
+ Return values:
+ The second of the deliver
+ */
+double Packet::getSecond() const
+{
+	return time.getMinute();
+}
+
+/*
+ Function name: Packet::getTimeAsString
+
+ Description:
+ An API to get a string describing the time of the deliver
+
+ Parameters:
+ None
+
+ Return values:
+ A string describing the time of the deliver
+ */
+string Packet::getTimeAsString() const
+{
+	return time.getTimeAsString();
+}
+
+/*
+ Function name: Packet::getIp
+
+ Description:
+ An API to get a string describing the time of the deliver
+
+ Parameters:
+ None
+
+ Return values:
+ A string describing the ip address
+ */
+string Packet::getIp() const
+{
+	return ip;
+}
+
+/*
+ Function name: Packet::getSize
+
+ Description:
+ An API to get a string describing the time of the deliver
+
+ Parameters:
+ None
+
+ Return values:
+ The size of the package
+ */
+uint64_t Packet::getSize() const
+{
+	return size;
+}
 
