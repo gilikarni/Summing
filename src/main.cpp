@@ -1,8 +1,15 @@
 
 /* Includes: */
+
+#include <cstdio>
 #include <iostream>
 #include "parser/parser.h"
+#include <exception>
+#include <stdexcept>
 #include <execinfo.h>
+
+
+using std::bad_alloc;
 
 int main()
 {
@@ -10,15 +17,11 @@ int main()
 	{
 		Parser parser;
 		std::cout << "Working" <<std::endl;
+		parser.erase();
 	}
-	catch (Exception ex)
+	catch (bad_alloc ex)
 	{
-		// Get stack trace for the exception with source file information
-		var st = new StackTrace(ex, true);
-		// Get the top stack frame
-		var frame = st.GetFrame(0);
-		// Get the line number from the stack frame
-		var line = frame.GetFileLineNumber();
+		std::cout << ex.what() <<std::endl;
 	}
 	return 0;
 }

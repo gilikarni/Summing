@@ -1,6 +1,7 @@
 /* Includes: */
 #include "parser.h"
 #include <exception>
+#include "packet.h"
 
 /* Namespace: */
 using std::string;
@@ -25,12 +26,11 @@ using std::bad_alloc;
  * 16:00:00.000031 137.227.47.182.80 1448
  */
 
-/* Static functions: */
+/* Macros: */
+#define printLogs(output) \
+		outputFile << "(Parser, line " << __LINE__ << ") : " << output << std::endl;
 
-void Parser::printLogs(const string& output)
-{
-	outputFile << "parser :: " << output << std::endl;
-}
+/* Static functions: */
 
 string Parser::findParserFileName()
 {
@@ -55,15 +55,15 @@ Parser::Parser(const string& tracesFilename, const ParserType& fileType) :
 
 	parserFile = fstream(parserFileName, fstream::in | fstream::out);
 
-	if (parserFile.good())
+	if (parserFile.is_open())
 	{
 		printLogs(string(SIZE_ONLY_FILE_NAME) + string(" already exist"));
 
 		/* The file already exist */
 		parserFile.open(SIZE_ONLY_FILE_NAME,
-				fstream::in | fstream::out | fstream::binary);
+				fstream::in | fstream::out);
 
-		if (parserFile.good())
+		if (parserFile.is_open())
 		{
 			printLogs(string("Successfully opened ") + parserFileName +
 					string(" for reading and writing"));
@@ -78,7 +78,7 @@ Parser::Parser(const string& tracesFilename, const ParserType& fileType) :
 
 	/* The file doesn't exist ==> create it */
 	ifstream inputFile(tracesFilename.c_str());
-	if (inputFile.good())
+	if (inputFile.is_open())
 	{
 		printLogs(string("Failed to open ") + tracesFilename);
 		throw bad_alloc();
@@ -88,15 +88,22 @@ Parser::Parser(const string& tracesFilename, const ParserType& fileType) :
 
 	parserFile.open(SIZE_ONLY_FILE_NAME,
 			fstream::in | fstream::out | fstream::binary);
+//
+//	if (parserFile.is_open())
+//	{
+//		printLogs("Successfully opened " + parserFileName + " for reading and writing");
+//	}
+//	else
+//	{
+//		printLogs("Failed to open " + parserFileName);
+//		throw bad_alloc();
+//	}
 
-	if (parserFile.good())
+	string buffer;
+	while (std::getline(inputFile, buffer))
 	{
-		printLogs("Successfully opened " + parserFileName + " for reading and writing");
-	}
-	else
-	{
-		printLogs("Failed to open " + parserFileName);
-		throw bad_alloc();
+		Packet packet(buffer);
+		parserFile << packet.getSize() << " ";
 	}
 }
 

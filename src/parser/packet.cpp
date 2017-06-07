@@ -5,6 +5,8 @@
  *      Author: compm
  */
 
+#define _GLIBCXX_USE_CXX11_ABI 0
+
 /* Includes: */
 #include "packet.h"
 #include <string>
@@ -34,9 +36,10 @@ using std::stringstream;
 
 /* Constructors: */
 
-Packet::Packet(string trace)
+Packet::Packet(const string& trace) :
+		input(trace)
 {
-	stringstream stream(trace);
+	stringstream stream(input);
 	string t, s;
 	stream >> t;
 	time(t);

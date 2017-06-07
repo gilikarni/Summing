@@ -29,11 +29,14 @@ class Packet
 	/* The size of the package */
 	uint64_t size;
 
+	/* Input string */
+	const string input;
+
 public:
 
 	/* Constructor: */
 
-	Packet(string trace);
+	Packet(const string& trace);
 
 	/* API: */
 
