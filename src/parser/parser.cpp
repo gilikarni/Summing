@@ -27,28 +27,33 @@ using std::bad_alloc;
 
 /* Static functions: */
 
-void Parser::printLogs(const string& output){
+void Parser::printLogs(const string& output)
+{
 	outputFile << "parser :: " << output << std::endl;
+}
+
+string Parser::findParserFileName()
+{
+	switch(type)
+	{
+	case PARSER_FILE_TYPE__SIZE_ONLY:
+		return SIZE_ONLY_FILE_NAME;
+		break;
+	default:
+		printLogs("Wrong parser file name");
+		throw bad_alloc();
+	}
+
+	return "";
 }
 
 /* Constructors: */
 Parser::Parser(const string& tracesFilename, const ParserType& fileType) :
-		type(fileType), outputFile(
-		OUTPUT_FILE_NAME)
+		type(fileType), outputFile(OUTPUT_FILE_NAME)
 {
-	string parserFileName("");
+	string parserFileName(findParserFileName());
 
-	switch(fileType)
-	{
-	case PARSER_FILE_TYPE__SIZE_ONLY:
-		parserFileName = SIZE_ONLY_FILE_NAME;
-		break;
-	default:
-		printLogs("Wrong parsre file name");
-		throw bad_alloc();
-	}
-
-	parserFile(parserFileName.c_str());
+	parserFile = fstream(parserFileName, fstream::in | fstream::out);
 
 	if (parserFile.good())
 	{
@@ -65,7 +70,7 @@ Parser::Parser(const string& tracesFilename, const ParserType& fileType) :
 		}
 		else
 		{
-			printLogs("Failed to open " parserFileName);
+			printLogs("Failed to open " + parserFileName);
 			throw bad_alloc();
 		}
 		return;
@@ -86,34 +91,22 @@ Parser::Parser(const string& tracesFilename, const ParserType& fileType) :
 
 	if (parserFile.good())
 	{
-		printLogs("Successfully opened " parserFileName " for reading and writing");
+		printLogs("Successfully opened " + parserFileName + " for reading and writing");
 	}
 	else
 	{
-		printLogs("Failed to open " parserFileName);
+		printLogs("Failed to open " + parserFileName);
 		throw bad_alloc();
 	}
 }
-
-
 
 /* API: */
 
 void Parser::erase()
 {
-	string parserFileName("");
+	string parserFileName(findParserFileName());
 
-	switch(fileType)
-	{
-	case PARSER_FILE_TYPE__SIZE_ONLY:
-		parserFileName = SIZE_ONLY_FILE_NAME;
-		break;
-	default:
-		printLogs("Wrong parser file name");
-		throw bad_alloc();
-	}
-
-	parserFile(parserFileName);
+	parserFile = fstream(parserFileName);
 
 	if (!fstream(parserFileName))
 	{
@@ -121,7 +114,7 @@ void Parser::erase()
 		return;
 	}
 
-	std::remove(parserFileName);
+	std::remove(parserFileName.c_str());
 
 	if (fstream(parserFileName))
 	{
@@ -129,6 +122,6 @@ void Parser::erase()
 	}
 	else
 	{
-		printLogs(string("Succefuly removed ") + parserFileName);
+		printLogs(string("Successfully removed ") + parserFileName);
 	}
 }

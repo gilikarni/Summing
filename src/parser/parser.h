@@ -34,6 +34,8 @@ class Parser
 
 	void printLogs(const string& output);
 
+	string findParserFileName();
+
 public:
 	/* Constructors: */
 	Parser(const string& tracesFilename = "projects.dump",
