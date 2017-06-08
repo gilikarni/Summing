@@ -26,11 +26,13 @@ typedef enum
 
 class Parser
 {
-	fstream parserFile;
-
 	ParserType type;
 
+	string parserFileName;
+
 	ofstream outputFile;
+
+	fstream parserFile;
 
 	string findParserFileName();
 
@@ -38,6 +40,9 @@ public:
 	/* Constructors: */
 	Parser(const string& tracesFilename = "projects.dump",
 			const ParserType& fileType = PARSER_FILE_TYPE__SIZE_ONLY);
+
+	/* Destructor: */
+	~Parser();
 
 	/* API: */
 	void erase();

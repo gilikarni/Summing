@@ -16,13 +16,14 @@ int main()
 	try
 	{
 		Parser parser;
-		std::cout << "Working" <<std::endl;
 		parser.erase();
 	}
 	catch (bad_alloc ex)
 	{
 		std::cout << ex.what() <<std::endl;
 	}
+
+	std::cout << "Done" <<std::endl;
 	return 0;
 }
 

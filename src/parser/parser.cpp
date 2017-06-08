@@ -2,6 +2,7 @@
 #include "parser.h"
 #include <exception>
 #include "packet.h"
+#include <iostream>
 
 /* Namespace: */
 using std::string;
@@ -52,8 +53,9 @@ Parser::Parser(const string& tracesFilename, const ParserType& fileType) :
 		type(fileType), outputFile(OUTPUT_FILE_NAME)
 {
 	string parserFileName(findParserFileName());
+	std::cout << parserFileName << std::endl;
 
-	parserFile = fstream(parserFileName, fstream::in | fstream::out);
+	parserFile.open(parserFileName);
 
 	if (parserFile.is_open())
 	{
@@ -98,12 +100,27 @@ Parser::Parser(const string& tracesFilename, const ParserType& fileType) :
 //		printLogs("Failed to open " + parserFileName);
 //		throw bad_alloc();
 //	}
+//
+//	string buffer;
+//	while (std::getline(inputFile, buffer))
+//	{
+//		Packet packet(buffer);
+//		parserFile << packet.getSize() << " ";
+//	}
 
-	string buffer;
-	while (std::getline(inputFile, buffer))
+	parserFile << "Hello World!\n";
+}
+
+/* Destructor: */
+Parser::~Parser()
+{
+	if (parserFile.is_open())
 	{
-		Packet packet(buffer);
-		parserFile << packet.getSize() << " ";
+		parserFile.close();
+	}
+	if (outputFile.is_open())
+	{
+		outputFile.close();
 	}
 }
 
