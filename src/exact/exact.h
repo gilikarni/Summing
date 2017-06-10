@@ -18,8 +18,13 @@
 /* Includes: */
 #include <queue>
 #include <cstdint>
+#include <fstream>
+#include <iostream>
+
 
 using std::queue;
+
+extern std::ofstream outputFile;
 
 class ExactSumming
 {
@@ -30,10 +35,10 @@ class ExactSumming
     const uint64_t window;
 
     /* The average of the window */
-    uint16_t mean;
+    double mean;
 
     /* The last "window" elemants */
-    queue<uint64_t> elements;
+    queue<double> elements;
 
     /* The minimum between the number of elements 
     that was alredy seen and "window" */
@@ -47,37 +52,13 @@ public:
     		const uint64_t& _range,
 			const uint16_t& _window);
 
-    /* API: */
-    
-    /*
-     * Function name: ExactSumming::update
-     *
-     * Description:
-     *  Update the mean of the sliding window, i.e, Adding the new
-     *  element to the sum and omit the oldest element.
-     *
-     * Parameters:
-     *  packatSize - The size of the new element
-     *
-     * Return values:
-     *  None
-    */
-    void update(
-    		const uint16_t& packatSize);
+    ~ExactSumming();
 
-    /*
-     * Function name: ExactSumming::query
-     *
-     * Description:
-     *  Return the mean of the last "window" elements
-     *
-     * Parameters:
-     *  None
-     *
-     * Return values:
-     *  The mean of the last "window" elements
-    */
-    uint64_t query() const;
+    /* API: */
+
+    void update(const uint16_t& packatSize);
+
+    double query() const;
 };
 
 #endif
