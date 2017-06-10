@@ -9,8 +9,7 @@
 #define PARSER_PACKET_H_
 
 /* Includes: */
-#include <string>
-#include "time.h"
+#include "parser_time.h"
 
 using std::string;
 
@@ -23,7 +22,7 @@ using std::string;
 class Packet
 {
 	/* The time of the deliver */
-	Time time;
+	ParserTime time_;
 	/* The ip from whom the package (including port) */
 	string ip;
 	/* The size of the package */
@@ -36,7 +35,7 @@ public:
 
 	/* Constructor: */
 
-	Packet(const string& trace);
+	Packet(string trace);
 
 	/* API: */
 

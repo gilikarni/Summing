@@ -5,8 +5,8 @@
  *      Author: compm
  */
 
-#ifndef PARSER_TIME_H_
-#define PARSER_TIME_H_
+#ifndef PARSER_PARSER_TIME_H_
+#define PARSER_PARSER_TIME_H_
 
 /* Includes: */
 #include <string>
@@ -20,7 +20,7 @@ using std::string;
  The class contains the time of a package
  that was delivered
  */
-class Time
+class ParserTime
 {
 	/* The hour that the package was received */
 	uint8_t hour;
@@ -35,7 +35,7 @@ public:
 
 	/* Constructor: */
 
-	Time(const string& time);
+	ParserTime(string time);
 
 	/* API: */
 
@@ -48,4 +48,4 @@ public:
 	string getTimeAsString() const;
 };
 
-#endif /* PARSER_TIME_H_ */
+#endif /* PARSER_PARSER_TIME_H_ */

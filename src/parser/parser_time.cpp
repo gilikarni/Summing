@@ -7,7 +7,7 @@
 
 /* Includes: */
 #include <string>
-#include "time.h"
+#include "parser_time.h"
 
 /* Namespace: */
 using std::string;
@@ -38,7 +38,7 @@ using std::bad_alloc;
 
 /* Constructors: */
 
-Time::Time(const string& time) :
+ParserTime::ParserTime(string time) :
 		hour(atoi(time.substr(HOUR_START, HOUR_END).c_str())),
 		minute(atoi(time.substr(MINUTE_START, MINUTE_END).c_str())),
 		second(atof(time.substr(SECOND_START, SECOND_END).c_str())),
@@ -51,7 +51,7 @@ Time::Time(const string& time) :
 /* API: */
 
 /*
- Function name: Time::getHour
+ Function name: ParserTime::getHour
 
  Description:
  An API to get the hour of the deliver
@@ -62,13 +62,13 @@ Time::Time(const string& time) :
  Return values:
  The hour of the deliver
  */
-uint8_t Time::getHour() const
+uint8_t ParserTime::getHour() const
 {
 	return hour;
 }
 
 /*
- Function name: Time::getMinute
+ Function name: ParserTime::getMinute
 
  Description:
  An API to get the minute of the deliver
@@ -79,13 +79,13 @@ uint8_t Time::getHour() const
  Return values:
  The minute of the deliver
  */
-uint8_t Time::getMinute() const
+uint8_t ParserTime::getMinute() const
 {
 	return minute;
 }
 
 /*
- Function name: Time::getSecond
+ Function name: ParserTime::getSecond
 
  Description:
  An API to get the second of the deliver
@@ -96,13 +96,13 @@ uint8_t Time::getMinute() const
  Return values:
  The second of the deliver
  */
-double Time::getSecond() const
+double ParserTime::getSecond() const
 {
 	return second;
 }
 
 /*
- Function name: Time::getTimeAsString
+ Function name: ParserTime::getTimeAsString
 
  Description:
  An API to get a string describing the time of the deliver
@@ -113,7 +113,7 @@ double Time::getSecond() const
  Return values:
  A string describing the time of the deliver
  */
-string Time::getTimeAsString() const
+string ParserTime::getTimeAsString() const
 {
 	return timeStr;
 }

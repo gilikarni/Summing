@@ -9,8 +9,9 @@
 
 /* Includes: */
 #include "packet.h"
-#include <string>
+#include "parser_time.h"
 #include <exception>
+#include <sstream>
 
 /* Namespace: */
 using std::string;
@@ -36,16 +37,16 @@ using std::stringstream;
 
 /* Constructors: */
 
-Packet::Packet(const string& trace) :
-		input(trace)
+Packet::Packet(string trace) :
+		time_(""), ip(""), size(0), input(trace)
 {
 	stringstream stream(input);
 	string t, s;
 	stream >> t;
-	time(t);
+	time_ = ParserTime(t);
 	stream >> ip;
 	stream >> s;
-	size(atoll(s));
+	size = atoll(s.c_str());
 }
 
 /* Static functions: */
@@ -66,7 +67,7 @@ Packet::Packet(const string& trace) :
  */
 uint8_t Packet::getHour() const
 {
-	return time.getHour();
+	return time_.getHour();
 }
 
 /*
@@ -83,7 +84,7 @@ uint8_t Packet::getHour() const
  */
 uint8_t Packet::getMinute() const
 {
-	return time.getMinute();
+	return time_.getMinute();
 }
 
 /*
@@ -100,7 +101,7 @@ uint8_t Packet::getMinute() const
  */
 double Packet::getSecond() const
 {
-	return time.getMinute();
+	return time_.getMinute();
 }
 
 /*
@@ -117,7 +118,7 @@ double Packet::getSecond() const
  */
 string Packet::getTimeAsString() const
 {
-	return time.getTimeAsString();
+	return time_.getTimeAsString();
 }
 
 /*

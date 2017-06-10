@@ -1,6 +1,6 @@
 
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -g -Werror
+CXXFLAGS = -std=c++11 -Wall -Werror -pedantic -ggdb -I. -Wextra -lstdc++
 
 ifeq ($(DEBUG),1)
   CXXFLAGS += -g -O0
@@ -17,8 +17,9 @@ OBJ = ${OBJDIR}/additive_mistake/additive_mistake.o\
 	${OBJDIR}/exact_slack_window/exact_slack_window.o\
 	${OBJDIR}/multiplative_mistake/multiplative_mistake.o\
 	${OBJDIR}/multiplative_mistake_slack_window/multiplative_mistake_slack_window.o\
-	${OBJDIR}/parser/parser.o\
-	${OBJDIR}/parser/time.o
+	${OBJDIR}/parser/parser_time.o\
+	${OBJDIR}/parser/packet.o\
+	${OBJDIR}/parser/parser.o
 
 BIN_OBJ = ${OBJDIR}/main.o
 
@@ -31,39 +32,43 @@ main: ${OBJDIR} ${BIN_OBJ} ${OBJ}
 
 ${OBJDIR}/additive_mistake/additive_mistake.o: \
 	${SRCDIR}/additive_mistake/additive_mistake.cpp
-	${CXX} ${CXXFLAGS} -o $@ -c $^
-	
+	${CXX} ${CXXFLAGS} -o $@ -c $<
+
 ${OBJDIR}/additive_mistake_slack_window/additive_mistake_slack_window.o: \
 	${SRCDIR}/additive_mistake_slack_window/additive_mistake_slack_window.cpp
-	${CXX} ${CXXFLAGS} -c -o $@ $^
-	
+	${CXX} ${CXXFLAGS} -c -o $@ $<
+
 ${OBJDIR}/exact/exact.o: \
 	${SRCDIR}/exact/exact.cpp
-	${CXX} ${CXXFLAGS} -c -o $@ $^
-	
+	${CXX} ${CXXFLAGS} -c -o $@ $<
+
 ${OBJDIR}/exact_slack_window/exact_slack_window.o: \
 	${SRCDIR}/exact_slack_window/exact_slack_window.cpp
-	${CXX} ${CXXFLAGS} -c -o $@ $^
-	
+	${CXX} ${CXXFLAGS} -c -o $@ $<
+
 ${OBJDIR}/multiplative_mistake/multiplative_mistake.o: \
 	${SRCDIR}/multiplative_mistake/multiplative_mistake.cpp
-	${CXX} ${CXXFLAGS} -c -o $@ $^
-	
+	${CXX} ${CXXFLAGS} -c -o $@ $<
+
 ${OBJDIR}/multiplative_mistake_slack_window/multiplative_mistake_slack_window.o: \
 	${SRCDIR}/multiplative_mistake_slack_window/multiplative_mistake_slack_window.cpp
-	${CXX} ${CXXFLAGS} -c -o $@ $^
-	
-${OBJDIR}/parser/time.o: \
-	${SRCDIR}/parser/time.cpp
-	${CXX} ${CXXFLAGS} -c -o $@ $^
-	
+	${CXX} ${CXXFLAGS} -c -o $@ $<
+
+${OBJDIR}/parser/parser_time.o: \
+	${SRCDIR}/parser/parser_time.cpp
+	${CXX} ${CXXFLAGS} -c -o $@ $<
+
+${OBJDIR}/parser/packet.o: \
+	${SRCDIR}/parser/packet.cpp
+	${CXX} ${CXXFLAGS} -c -o $@ $< ${SRCDIR}/parser/parser_time.cpp
+
 ${OBJDIR}/parser/parser.o: \
 	${SRCDIR}/parser/parser.cpp
-	${CXX} ${CXXFLAGS} -c -o $@ $^
+	${CXX} ${CXXFLAGS} -c -o $@ $<
 
 ${BIN_OBJ}: \
 	${SRCDIR}/main.cpp
-	${CXX} ${CXXFLAGS} -c -o $@ $^
+	${CXX} ${CXXFLAGS} -c -o $@ $<
 
 ${OBJDIR}:
 	mkdir -p ${OBJDIR}/additive_mistake
@@ -73,7 +78,7 @@ ${OBJDIR}:
 	mkdir -p ${OBJDIR}/multiplative_mistake
 	mkdir -p ${OBJDIR}/multiplative_mistake_slack_window
 	mkdir -p ${OBJDIR}/parser
-        
+
 clean:
 	rm -rf ${OBJDIR}/additive_mistake
 	rm -rf ${OBJDIR}/additive_mistake_slack_window
@@ -82,12 +87,3 @@ clean:
 	rm -rf ${OBJDIR}/multiplative_mistake
 	rm -rf ${OBJDIR}/multiplative_mistake_slack_window
 	rm -rf ${OBJDIR}/parser
-	
-	
-	
-	
-	
-	
-	
-	
-	

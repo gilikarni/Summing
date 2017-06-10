@@ -3,6 +3,7 @@
 #include <exception>
 #include "packet.h"
 #include <iostream>
+#include "../utils.h"
 
 /* Namespace: */
 using std::string;
@@ -28,8 +29,6 @@ using std::bad_alloc;
  */
 
 /* Macros: */
-#define printLogs(output) \
-		outputFile << "(Parser, line " << __LINE__ << ") : " << output << std::endl;
 
 /* Static functions: */
 
