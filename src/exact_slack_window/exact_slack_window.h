@@ -15,8 +15,12 @@
 /* Includes: */
 #include<queue>
 #include <cstdint>
+#include <fstream>
+#include <iostream>
 
 using std::queue;
+
+extern std::ofstream outputFile;
 
 class ExactSlackSumming
 {
@@ -27,7 +31,7 @@ class ExactSlackSumming
     const uint64_t window;
 
     /* The average of the window */
-    uint64_t mean;
+    uint64_t sum;
 
     /* The minimum between the number of elements
     that was alredy seen and "window" */
@@ -46,6 +50,9 @@ class ExactSlackSumming
     /* The number of elements that was summed at the last iteration */
     uint64_t diff;
 
+    /* The size of the summing blocks */
+    uint64_t blockSize;
+
 public:
 
     /* Contructors: */
@@ -55,37 +62,14 @@ public:
 			const uint64_t& w,
 			const double& t);
 
+    ~ExactSlackSumming();
+
     /* API: */
 
-    /*
-     * Function name: ExactSlackSumming::update
-     *
-     * Description:
-     *  Update the mean of the sliding window.
-     *
-     * Parameters:
-     *  packatSize - The size of the new element
-     *
-     * Return values:
-     *  None
-    */
     void update(
     		const uint16_t& packetSize);
 
-    /*
-     * Function name: ExactSlackSumming::query
-     *
-     * Description:
-     *  Return the mean of the last "window" elements
-     *
-     * Parameters:
-     *  windowSizeMistake - output. The difference between the size of the
-     *  window that was summed and w.
-     *
-     * Return values:
-     *  The mean of the last "window" + windowSizeMistake elements
-    */
-    uint64_t query(uint64_t& windowSizeMistake) const;
+    double query(uint64_t& windowSizeMistake) const;
 };
 
 #endif
