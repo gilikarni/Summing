@@ -17,9 +17,6 @@ OBJ = ${OBJDIR}/additive_mistake/additive_mistake.o\
 	${OBJDIR}/exact_slack_window/exact_slack_window.o\
 	${OBJDIR}/multiplative_mistake/multiplative_mistake.o\
 	${OBJDIR}/multiplative_mistake_slack_window/multiplative_mistake_slack_window.o\
-	${OBJDIR}/parser/parser_time.o\
-	${OBJDIR}/parser/packet.o\
-	${OBJDIR}/parser/parser.o
 
 BIN_OBJ = ${OBJDIR}/main.o
 
@@ -52,18 +49,6 @@ ${OBJDIR}/multiplative_mistake/multiplative_mistake.o: \
 
 ${OBJDIR}/multiplative_mistake_slack_window/multiplative_mistake_slack_window.o: \
 	${SRCDIR}/multiplative_mistake_slack_window/multiplative_mistake_slack_window.cpp
-	${CXX} ${CXXFLAGS} -c -o $@ $<
-
-${OBJDIR}/parser/parser_time.o: \
-	${SRCDIR}/parser/parser_time.cpp
-	${CXX} ${CXXFLAGS} -c -o $@ $<
-
-${OBJDIR}/parser/packet.o: \
-	${SRCDIR}/parser/packet.cpp
-	${CXX} ${CXXFLAGS} -c -o $@ $< ${SRCDIR}/parser/parser_time.cpp
-
-${OBJDIR}/parser/parser.o: \
-	${SRCDIR}/parser/parser.cpp
 	${CXX} ${CXXFLAGS} -c -o $@ $<
 
 ${BIN_OBJ}: \
