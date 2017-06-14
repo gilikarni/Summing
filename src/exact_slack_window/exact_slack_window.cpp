@@ -54,8 +54,7 @@ ExactSlackSumming::~ExactSlackSumming()
  * Return values:
  *  None
 */
-void ExactSlackSumming::update(
-		const uint16_t& packetSize)
+void ExactSlackSumming::update(const uint16_t& packetSize)
 {
 	numberOfElementsSeen++;
 

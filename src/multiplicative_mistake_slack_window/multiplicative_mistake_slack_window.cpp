@@ -156,6 +156,6 @@ double MultiplicativeMistakeSlackSumming::query(uint64_t& windowSizeMistake) con
 		resultmean /= numberOfElementsSeen;
 	}
 
-	return mean;
+	return resultmean;
 }
 
