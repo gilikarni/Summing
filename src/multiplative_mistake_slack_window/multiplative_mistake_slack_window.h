@@ -15,7 +15,7 @@
 
 using std::queue;
 
-class ExactSlackSumming
+class MultiplativeMistakeSlackSumming
 {
     /* The range of the sizes */
     const uint64_t range;
@@ -45,12 +45,16 @@ class ExactSlackSumming
 
 public:
 
-    /* Contructors: */
+    /* Constructors: */
 
-    ExactSlackSumming(
+    MultiplativeMistakeSlackSumming(
     		const uint64_t& r,
 			const uint64_t& w,
 			const double& t);
+
+    /* Destructors */
+
+    ~MultiplativeMistakeSlackSumming();
 
     /* API: */
 

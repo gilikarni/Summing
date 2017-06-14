@@ -9,7 +9,7 @@
 
 /* Globals: */
 
-std::ofstream outputFile;
+std::ofstream ExactSlackSumming_outputFile;
 
 /* Constructors: */
 
@@ -22,17 +22,20 @@ ExactSlackSumming::ExactSlackSumming(
 {
 	blockSize = (uint64_t)round((double(window)*tau));
 
-	outputFile.open(OUTPUT_FILE_NAME);
-	if (!outputFile || !outputFile.good())
+	ExactSlackSumming_outputFile.open(
+			OUTPUT_FILE_NAME,
+			std::ofstream::out | std::ofstream::app);
+	if (!ExactSlackSumming_outputFile || !ExactSlackSumming_outputFile.good())
 	{
-		std::cout << "Could not open " << OUTPUT_FILE_NAME << std::endl;
+		std::cout << "Could not open " << OUTPUT_FILE_NAME << " in "
+				<< __FILE__ << std::endl;
 		throw std::bad_alloc();
 	}
 }
 
 ExactSlackSumming::~ExactSlackSumming()
 {
-	outputFile.close();
+	ExactSlackSumming_outputFile.close();
 }
 
 /* Static functions: */
@@ -104,6 +107,7 @@ double ExactSlackSumming::query(uint64_t& windowSizeMistake) const
 		windowSizeMistake = diff;
 	}
 
-	printLogs("Query - Mean = " << mean << " Diff = " << diff);
+	printLogsToFile(ExactSlackSumming_outputFile,
+			"Query - Mean = " << mean << " Diff = " << diff);
 	return mean;
 }

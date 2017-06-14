@@ -7,7 +7,8 @@
 /* Macros: */
 
 /* Globals: */
-std::ofstream outputFile;
+
+std::ofstream ExactSumming_outputFile;
 
 /* Constructors: */
 
@@ -16,17 +17,20 @@ ExactSumming::ExactSumming(
 		const uint16_t& _window) :
 		range(_range), window(_window), mean(0), numberOfElementsSeen(0)
 {
-	outputFile.open(OUTPUT_FILE_NAME);
-	if (!outputFile.is_open())
+	ExactSumming_outputFile.open(
+			OUTPUT_FILE_NAME,
+			std::ofstream::out | std::ofstream::app);
+	if (!ExactSumming_outputFile || !ExactSumming_outputFile.good())
 	{
-		std::cout << "Can not open" << OUTPUT_FILE_NAME << std::endl;
+		std::cout << "Could not open " << OUTPUT_FILE_NAME << " in "
+				<< __FILE__ << std::endl;
 		throw std::bad_alloc();
 	}
 }
 
 ExactSumming::~ExactSumming()
 {
-	outputFile.close();
+	ExactSumming_outputFile.close();
 }
 
 /* Static functions: */
@@ -80,6 +84,6 @@ void ExactSumming::update(const uint16_t& packatSize)
 */
 double ExactSumming::query() const
 {
-	printLogs("The mean is " << mean);
+	printLogsToFile(ExactSumming_outputFile, "Query - Mean = " << mean);
 	return mean;
 }

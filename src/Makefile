@@ -17,6 +17,7 @@ OBJ = ${OBJDIR}/additive_mistake/additive_mistake.o\
 	${OBJDIR}/exact_slack_window/exact_slack_window.o\
 	${OBJDIR}/multiplative_mistake/multiplative_mistake.o\
 	${OBJDIR}/multiplative_mistake_slack_window/multiplative_mistake_slack_window.o\
+	${OBJDIR}/utils.o
 
 BIN_OBJ = ${OBJDIR}/main.o
 
@@ -50,6 +51,10 @@ ${OBJDIR}/multiplative_mistake/multiplative_mistake.o: \
 ${OBJDIR}/multiplative_mistake_slack_window/multiplative_mistake_slack_window.o: \
 	${SRCDIR}/multiplative_mistake_slack_window/multiplative_mistake_slack_window.cpp
 	${CXX} ${CXXFLAGS} -c -o $@ $<
+	
+${OBJDIR}/utils.o: \
+	${SRCDIR}/utils.cpp
+	${CXX} ${CXXFLAGS} -c -o $@ $<
 
 ${BIN_OBJ}: \
 	${SRCDIR}/main.cpp
@@ -72,3 +77,4 @@ clean:
 	rm -rf ${OBJDIR}/multiplative_mistake
 	rm -rf ${OBJDIR}/multiplative_mistake_slack_window
 	rm -rf ${OBJDIR}/parser
+	rm -f ${SRCDIR}/output
