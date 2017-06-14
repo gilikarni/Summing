@@ -84,6 +84,5 @@ void ExactSumming::update(const uint16_t& packatSize)
 */
 double ExactSumming::query() const
 {
-	printLogsToFile(ExactSumming_outputFile, "Query - Mean = " << mean);
 	return mean;
 }

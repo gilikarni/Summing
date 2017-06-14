@@ -28,6 +28,4 @@ file << "(" << __FILE__ << ", line " << __LINE__ << "): " << output << std::endl
 
 /* Function Declarations */
 
-double roundV(double z, int v);
-
 #endif /* UTILS_H_ */

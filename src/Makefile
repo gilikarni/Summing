@@ -15,8 +15,8 @@ OBJ = ${OBJDIR}/additive_mistake/additive_mistake.o\
 	${OBJDIR}/additive_mistake_slack_window/additive_mistake_slack_window.o\
 	${OBJDIR}/exact/exact.o\
 	${OBJDIR}/exact_slack_window/exact_slack_window.o\
-	${OBJDIR}/multiplative_mistake/multiplative_mistake.o\
-	${OBJDIR}/multiplative_mistake_slack_window/multiplative_mistake_slack_window.o\
+	${OBJDIR}/multiplicative_mistake/multiplicative_mistake.o\
+	${OBJDIR}/multiplicative_mistake_slack_window/multiplicative_mistake_slack_window.o\
 	${OBJDIR}/utils.o
 
 BIN_OBJ = ${OBJDIR}/main.o
@@ -44,12 +44,12 @@ ${OBJDIR}/exact_slack_window/exact_slack_window.o: \
 	${SRCDIR}/exact_slack_window/exact_slack_window.cpp
 	${CXX} ${CXXFLAGS} -c -o $@ $<
 
-${OBJDIR}/multiplative_mistake/multiplative_mistake.o: \
-	${SRCDIR}/multiplative_mistake/multiplative_mistake.cpp
+${OBJDIR}/multiplicative_mistake/multiplicative_mistake.o: \
+	${SRCDIR}/multiplicative_mistake/multiplicative_mistake.cpp
 	${CXX} ${CXXFLAGS} -c -o $@ $<
 
-${OBJDIR}/multiplative_mistake_slack_window/multiplative_mistake_slack_window.o: \
-	${SRCDIR}/multiplative_mistake_slack_window/multiplative_mistake_slack_window.cpp
+${OBJDIR}/multiplicative_mistake_slack_window/multiplicative_mistake_slack_window.o: \
+	${SRCDIR}/multiplicative_mistake_slack_window/multiplicative_mistake_slack_window.cpp
 	${CXX} ${CXXFLAGS} -c -o $@ $<
 	
 ${OBJDIR}/utils.o: \
@@ -65,8 +65,8 @@ ${OBJDIR}:
 	mkdir -p ${OBJDIR}/additive_mistake_slack_window
 	mkdir -p ${OBJDIR}/exact
 	mkdir -p ${OBJDIR}/exact_slack_window
-	mkdir -p ${OBJDIR}/multiplative_mistake
-	mkdir -p ${OBJDIR}/multiplative_mistake_slack_window
+	mkdir -p ${OBJDIR}/multiplicative_mistake
+	mkdir -p ${OBJDIR}/multiplicative_mistake_slack_window
 	mkdir -p ${OBJDIR}/parser
 
 clean:
@@ -74,7 +74,7 @@ clean:
 	rm -rf ${OBJDIR}/additive_mistake_slack_window
 	rm -rf ${OBJDIR}/exact
 	rm -rf ${OBJDIR}/exact_slack_window
-	rm -rf ${OBJDIR}/multiplative_mistake
-	rm -rf ${OBJDIR}/multiplative_mistake_slack_window
+	rm -rf ${OBJDIR}/multiplicative_mistake
+	rm -rf ${OBJDIR}/multiplicative_mistake_slack_window
 	rm -rf ${OBJDIR}/parser
 	rm -f ${SRCDIR}/output

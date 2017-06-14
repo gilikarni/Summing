@@ -15,7 +15,7 @@
 
 using std::queue;
 
-class MultiplativeMistakeSlackSumming
+class MultiplicativeMistakeSlackSumming
 {
     /* The range of the sizes */
     const uint64_t range;
@@ -34,59 +34,40 @@ class MultiplativeMistakeSlackSumming
     aloud to add*/
     const double tau;
 
+    /* The allowed mistake in the mean */
+	const double epsilon;
+
     /* The sum of the last elements */
     uint64_t lastElements;
 
     /* 1/tau sums of window*tau elements from the elements delivered */
-    queue<uint64_t> elements;
+    queue<double> elements;
 
     /* The number of elements that was summed at the last iteration */
     uint64_t diff;
+
+    /* The size of the summing blocks */
+    uint64_t blockSize;
 
 public:
 
     /* Constructors: */
 
-    MultiplativeMistakeSlackSumming(
-    		const uint64_t& r,
-			const uint64_t& w,
-			const double& t);
+    MultiplicativeMistakeSlackSumming(
+    		const uint64_t& _range,
+			const uint64_t& _window,
+			const double& _tau,
+			const double& _epsilon);
 
     /* Destructors */
 
-    ~MultiplativeMistakeSlackSumming();
+    ~MultiplicativeMistakeSlackSumming();
 
     /* API: */
 
-    /*
-     * Function name: ExactSlackSumming::update
-     *
-     * Description:
-     *  Update the mean of the sliding window.
-     *
-     * Parameters:
-     *  packatSize - The size of the new element
-     *
-     * Return values:
-     *  None
-    */
-    void update(
-    		const uint16_t& packetSize);
+    void update(const uint16_t& packetSize);
 
-    /*
-     * Function name: ExactSlackSumming::query
-     *
-     * Description:
-     *  Return the mean of the last "window" elements
-     *
-     * Parameters:
-     *  windowSizeMistake - output. The difference between the size of the
-     *  window that was summed and w.
-     *
-     * Return values:
-     *  The mean of the last "window" + windowSizeMistake elements
-    */
-    uint64_t query(uint64_t& windowSizeMistake) const;
+    double query(uint64_t& windowSizeMistake) const;
 };
 
 #endif

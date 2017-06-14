@@ -107,7 +107,5 @@ double ExactSlackSumming::query(uint64_t& windowSizeMistake) const
 		windowSizeMistake = diff;
 	}
 
-	printLogsToFile(ExactSlackSumming_outputFile,
-			"Query - Mean = " << mean << " Diff = " << diff);
 	return mean;
 }
