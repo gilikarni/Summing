@@ -5,7 +5,7 @@
 /*
  * File description:
  *  Each time a new packet arrives we it's value to y. Every w * tau packets
- *  we add a rounded variation of y to the total mean and subtract the oldest
+ *  we add a rounded variation of y to the total sum and subtract the oldest
  *  addition.
 */
 
@@ -24,17 +24,13 @@ class MultiplicativeMistakeSlackSumming
     const uint64_t window;
 
     /* The average of the window */
-    uint64_t mean;
-
-    /* The minimum between the number of elements
-    that was alredy seen and "window" */
-    uint64_t numberOfElementsSeen;
+    uint64_t sum;
 
     /* The percentage of the window size which is
     aloud to add*/
     const double tau;
 
-    /* The allowed mistake in the mean */
+    /* The allowed mistake in the sum */
 	const double epsilon;
 
     /* The sum of the last elements */

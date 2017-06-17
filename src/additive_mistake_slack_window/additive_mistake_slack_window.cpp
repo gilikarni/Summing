@@ -4,6 +4,7 @@
 #include "additive_mistake_slack_window.h"
 #include "../utils.h"
 #include <cmath>
+#include <deque>
 #include <algorithm>
 
 /* Namespace: */
@@ -22,8 +23,9 @@ AdditiveSlackMistake::AdditiveSlackMistake(
 		const double& _tau,
 		const double& _epsilon) :
 		window(_window), range(_range), tau(_tau), epsilon(_epsilon),
-		currentSum(0), mean(0),	diff(0), numberOfElementsSeen(0),
-		v1((int)ceil(log(1/epsilon)/log(2) + 1)), v2((int)ceil(log(tau/epsilon)/log(2)))
+		currentSum(0), blockSums(std::deque<uint16_t>((int)ceil(1/tau), 0)),
+		sum(0),	diff(0), v1((int)ceil(log(1/epsilon)/log(2) + 1)),
+		v2((int)ceil(log(tau/epsilon)/log(2)))
 {
 	AdditiveSlackMistake_outputFile.open(
 			OUTPUT_FILE_NAME,
@@ -81,7 +83,7 @@ double roundV(double z, int v)
  * Function name: AdditiveSlackMistake::update
  *
  * Description:
- *  Update the mean of the sliding window.
+ *  Update the sum of the sliding window.
  *
  * Parameters:
  *  packatSize - The size of the new element
@@ -95,18 +97,13 @@ void AdditiveSlackMistake::update(const uint16_t& packetSize)
 
 	currentSum += x;
 	diff++;
-	numberOfElementsSeen++;
 
 	if (blockSize == diff)
 	{
-		if (numberOfElementsSeen >= window)
-		{
-			mean -= blockSums.front();
-			blockSums.pop();
-		}
-
+		sum -= blockSums.front();
+		blockSums.pop();
 		double bi = roundV((double) currentSum / (double)blockSize, v2);
-		mean += bi;
+		sum += bi;
 		blockSums.push(bi);
 		currentSum -= blockSize*bi;
 		diff = 0;
@@ -117,33 +114,19 @@ void AdditiveSlackMistake::update(const uint16_t& packetSize)
  * Function name: AdditiveSlackMistake::query
  *
  * Description:
- *  Return the mean of the last "window" elements
+ *  Return the sum of the last "window" elements
  *
  * Parameters:
  *  windowSizeMistake - output. The difference between the size of the
  *  window that was summed and w.
  *
  * Return values:
- *  The mean of the last "window" + windowSizeMistake elements
+ *  The sum of the last "window" + windowSizeMistake elements
 */
 double AdditiveSlackMistake::query(uint64_t& windowSizeMistake) const
 {
-	double resultMean = 0;
-	windowSizeMistake = 0;
+	double resultSum = (double)range*((double)blockSize*(double)sum + (double)currentSum);
+	windowSizeMistake = diff;
 
-	if (numberOfElementsSeen > 0)
-	{
-		resultMean = (double)range*((double)blockSize*(double)mean + (double)currentSum);
-		if (numberOfElementsSeen >= window)
-		{
-			resultMean /= (double)(window + diff);
-			windowSizeMistake = diff;
-		}
-		else
-		{
-			resultMean /= (double)(numberOfElementsSeen);
-		}
-	}
-
-	return resultMean;
+	return resultSum;
 }

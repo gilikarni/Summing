@@ -29,28 +29,24 @@ class AdditiveSlackMistake
 	/* The allowed percentage of mistake in the window size */
 	const double tau;
 
-	/* The allowed mistake in the mean */
+	/* The allowed mistake in the sum */
 	const double epsilon;
 
 	/* The Sum of the current block */
 	double currentSum;
 
-	/* A queue of sums of the blocks that are currently in the mean */
+	/* A queue of sums of the blocks that are currently in the sum */
 	queue<uint16_t> blockSums;
 
-	/* The current mean - the sum of the elements in blockSums*/
-	uint16_t mean;
+	/* The current sum - the sum of the elements in blockSums*/
+	uint16_t sum;
 
 	/* The difference the actual window size and the desired window size -
 	 * The number of elements summed to currentSum
 	 */
 	uint16_t diff;
 
-    /* The minimum between the number of elements
-    that was already seen and "window" */
-    uint64_t numberOfElementsSeen;
-
-    /* An internal use variable for calculating the mean */
+    /* An internal use variable for calculating the sum */
     int v1, v2;
 
     /* The size of the summing blocks */

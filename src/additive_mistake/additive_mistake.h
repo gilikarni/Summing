@@ -25,7 +25,7 @@ class AdditiveMistake
     const uint64_t window;
 
     /* The average of the window */
-    uint64_t mean;
+    uint64_t sum;
 
     /* The last "window" summed T elemants */
     bitset<32> elements;
@@ -34,11 +34,11 @@ class AdditiveMistake
     that was alredy seen and "window" */
     uint64_t numberOfElementsSeen;
 
-    /* The temporal mean of the last elements - y */
-    uint64_t subMean;
+    /* The temporal sum of the last elements - y */
+    uint64_t subSum;
 
-    /* The number of elements in every sub mean - T */
-    const uint64_t numberOfElementsInSubMean;
+    /* The size of block to sum of the subSum - T */
+    uint64_t blockSize;
 
 public:
 
@@ -55,10 +55,10 @@ public:
      * Function name: AdditiveMistake::update
      *
      * Description:
-     *  Update the mean of the sliding window, i.e, Adding the new
+     *  Update the sum of the sliding window, i.e, Adding the new
      *  element to the sub sum, If needed add the sub sum to the queue
-     *  and to the mean and pop out the last element in the queue and
-     *  Subtract from the mean.
+     *  and to the sum and pop out the last element in the queue and
+     *  Subtract from the sum.
      *
      * Parameters:
      *  packatSize - The size of the new element
@@ -73,14 +73,14 @@ public:
      * Function name: AdditiveMistake::query
      *
      * Description:
-     *  Return the mean of the last "window" elements
+     *  Return the sum of the last "window" elements
      *  (maybe with a mistake)
      *
      * Parameters:
      *  None
      *
      * Return values:
-     *  The mean of the last "window" elements
+     *  The sum of the last "window" elements
     */
     uint64_t query() const;
 };

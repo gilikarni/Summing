@@ -18,9 +18,9 @@ MultiplicativeMistakeSlackSumming::MultiplicativeMistakeSlackSumming(
 			const uint64_t& _window,
 			const double& _tau,
 			const double& _epsilon) :
-			range(_range), window(_window), mean(0),
-			numberOfElementsSeen(0), tau(_tau), epsilon(_epsilon),
-			lastElements(0), diff(0)
+			range(_range), window(_window), sum(0), tau(_tau),
+			epsilon(_epsilon), lastElements(0),
+			elements(std::deque<double>((int)ceil(1/_tau), 0)), diff(0)
 {
 	MultiplicativeMistakeSlackSumming_outputFile.open(
 			OUTPUT_FILE_NAME,
@@ -58,7 +58,7 @@ MultiplicativeMistakeSlackSumming::~MultiplicativeMistakeSlackSumming()
  *  Calculate ro according to the essay.
  *
  * Parameters:
- *  epsilon - The allowed mistake in the mean
+ *  epsilon - The allowed mistake in the sum
  *  y - the sum of the elements in the last block.
  *
  * Return values:
@@ -78,7 +78,7 @@ static double calcRo(const double& epsilon, const double& y)
  *  Calculate round down according to the essay.
  *
  * Parameters:
- *  epsilon - The allowed mistake in the mean
+ *  epsilon - The allowed mistake in the sum
  *  x - the number to round.
  *
  * Return values:
@@ -97,7 +97,7 @@ static double roundDown(const double& epsilon, const double& x)
  * Function name: MultiplicativeMistakeSlackSumming::update
  *
  * Description:
- *  Update the mean of the sliding window.
+ *  Update the sum of the sliding window.
  *
  * Parameters:
  *  packatSize - The size of the new element
@@ -109,21 +109,15 @@ void MultiplicativeMistakeSlackSumming::update(const uint16_t& packetSize)
 {
 	lastElements += packetSize;
 	diff++;
-	numberOfElementsSeen++;
 
 	if (diff == blockSize)
 	{
 		double ro = calcRo(epsilon, (double)lastElements);
 		elements.push(ro);
-		mean += roundDown(epsilon, pow(1 + epsilon/2, ro));
-
-		if (numberOfElementsSeen > window)
-		{
-			ro = elements.front();
-			elements.pop();
-			mean -= roundDown(epsilon, pow(1 + epsilon/2, ro));
-		}
-
+		sum += roundDown(epsilon, pow(1 + epsilon/2, ro));
+		ro = elements.front();
+		elements.pop();
+		sum -= roundDown(epsilon, pow(1 + epsilon/2, ro));
 		lastElements = 0;
 		diff = 0;
 	}
@@ -133,29 +127,20 @@ void MultiplicativeMistakeSlackSumming::update(const uint16_t& packetSize)
  * Function name: MultiplicativeMistakeSlackSumming::query
  *
  * Description:
- *  Return the mean of the last "window" elements
+ *  Return the sum of the last "window" elements
  *
  * Parameters:
  *  windowSizeMistake - output. The difference between the size of the
  *  window that was summed and w.
  *
  * Return values:
- *  The mean of the last "window" + windowSizeMistake elements
+ *  The sum of the last "window" + windowSizeMistake elements
 */
 double MultiplicativeMistakeSlackSumming::query(uint64_t& windowSizeMistake) const
 {
-	double resultmean = mean + lastElements;
-	windowSizeMistake = 0;
-	if (numberOfElementsSeen > window)
-	{
-		windowSizeMistake = diff;
-		resultmean /= window + diff;
-	}
-	else
-	{
-		resultmean /= numberOfElementsSeen;
-	}
+	double resultSum = sum + lastElements;
+	windowSizeMistake = diff;
 
-	return resultmean;
+	return resultSum;
 }
 

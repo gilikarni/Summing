@@ -1,6 +1,7 @@
 /* Includes: */
 #include "exact_slack_window.h"
 #include "../utils.h"
+#include <deque>
 #include <cmath>
 
 /* Namespace: */
@@ -17,8 +18,8 @@ ExactSlackSumming::ExactSlackSumming(
     		const uint64_t& _range,
 			const uint64_t& _window,
 			const double& _tau) :
-		range(_range), window(_window), sum(0), numberOfElementsSeen(0),
-		tau(_tau), lastElements(0), diff(0)
+		range(_range), window(_window), sum(0), tau(_tau), lastElements(0),
+		elements(std::deque<uint64_t>((int)ceil(1/tau), 0)), diff(0)
 {
 	blockSize = (uint64_t)round((double(window)*tau));
 
@@ -67,11 +68,8 @@ void ExactSlackSumming::update(const uint16_t& packetSize)
 		sum += lastElements;
 		lastElements = 0;
 		diff = 0;
-		if (numberOfElementsSeen > window)
-		{
-			sum -= elements.back();
-			elements.pop();
-		}
+		sum -= elements.back();
+		elements.pop();
 	}
 }
 
@@ -90,21 +88,8 @@ void ExactSlackSumming::update(const uint16_t& packetSize)
 */
 double ExactSlackSumming::query(uint64_t& windowSizeMistake) const
 {
-	double mean = 0;
-	if (0 == numberOfElementsSeen){
-		mean = 0;
-		windowSizeMistake = 0;
-	}
-	else if (numberOfElementsSeen < window)
-	{
-		mean = (double)(sum + lastElements) / (double)(numberOfElementsSeen);
-		windowSizeMistake = 0;
-	}
-	else
-	{
-		mean = (double)(sum + lastElements) / (double)(window + diff);
-		windowSizeMistake = diff;
-	}
+	double mean = (double)(sum + lastElements);
+	windowSizeMistake = diff;
 
 	return mean;
 }

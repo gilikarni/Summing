@@ -3,7 +3,7 @@
  * File description:
  *  This file describes the API of an algorithm of summing on a sliding window in
  *  size W of elements with size smaller then R and larger than 0.
- *  This is a naive algorithm which saves the last W elements and the mean of those
+ *  This is a naive algorithm which saves the last W elements and the sum of those
  *  elements. Every time that we need to update the sum we subtract the oldest element
  *  from the sum and add a new one.
  *
@@ -35,14 +35,10 @@ class ExactSumming
     const uint64_t window;
 
     /* The average of the window */
-    double mean;
+    double sum;
 
     /* The last "window" elemants */
-    queue<double> elements;
-
-    /* The minimum between the number of elements 
-    that was alredy seen and "window" */
-    uint64_t numberOfElementsSeen;
+    queue<uint16_t> elements;
 
 public:
 
