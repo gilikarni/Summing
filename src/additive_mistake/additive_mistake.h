@@ -13,6 +13,7 @@
 
 /* Includes: */
 #include <bitset>
+#include <queue>
 
 using std::bitset;
 
@@ -27,8 +28,11 @@ class AdditiveMistake
     /* The average of the window */
     uint64_t sum;
 
-    /* The last "window" summed T elemants */
+    /* The last "window" summed T elemants - for large epsilon values */
     bitset<32> elements;
+
+    /* The last "window" summed w elemants - for small epsilon values */
+    std::queue<double> lastElements;
 
     /* The temporal sum of the last elements - y */
     double subSum;
@@ -47,6 +51,8 @@ class AdditiveMistake
 
     /* The current index in the block - m */
     uint64_t blockIndex;
+
+    bool bLargeEpsilon;
 
 public:
 
