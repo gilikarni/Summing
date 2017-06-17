@@ -46,8 +46,8 @@ class AdditiveSlackMistake
 	 */
 	uint16_t diff;
 
-    /* An internal use variable for calculating the sum */
-    int v1, v2;
+    /* An internal use variables for calculating the sum */
+    uint64_t v1, v2;
 
     /* The size of the summing blocks */
     uint64_t blockSize;

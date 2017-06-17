@@ -36,7 +36,7 @@ using std::setw;
 #define FLAGS_WITH_VALUE_TABLE \
 X(window,		"The size of the window to sum of"			) \
 X(range,		"The range of the packet sizes"				) \
-X(epsilon,		"The allowed mistake in the mean"			) \
+X(epsilon,		"The allowed mistake in the sum"			) \
 X(tau,			"The allowed mistake in the window size"	) \
 X(iterations,	"The allowed number of iterations"			)
 
@@ -49,8 +49,8 @@ X(mul,			"Calculate with a multiplicative mistake"							) \
 X(add,			"Calculate with an additive mistake"								) \
 X(mul_slack,	"Calculate with a multiplicative mistake and a slack window size"	) \
 X(add_slack,	"Calculate with an additive mistake and a slack window size"		) \
-X(exact,		"Calculate the exact mean"											) \
-X(exact_slack,	"Calculate the exact mean on a slack window"						)
+X(exact,		"Calculate the exact sum"											) \
+X(exact_slack,	"Calculate the exact sum on a slack window"						)
 
 /* A table of the flags to be entered from the user and leads to a callback to be called.
  * First parameter is the flag's name.
@@ -249,6 +249,7 @@ int main(int argc, char* argv[])
 	ExactSumming exactSumming(range, window);
 	ExactSlackSumming exactSlackSumming(range, window, tau);
 	AdditiveSlackMistake addSlackMistake(window, range, tau, epsilon);
+	AdditiveMistake addMistake(range, window, epsilon);
 	MultiplicativeMistakeSlackSumming mulSlack(range, window, tau, epsilon);
 
 	while (getline(input, packetSizeInString) && counter++ < iterations)
@@ -278,7 +279,7 @@ int main(int argc, char* argv[])
 
 		if (is_add)
 		{
-			// Add a call to update function
+			addMistake.update(packetSize);
 		}
 
 		if (is_mul)
@@ -286,36 +287,38 @@ int main(int argc, char* argv[])
 			// Add a call to update function
 		}
 
-		double mean = exactSumming.query();
+		double sum = exactSumming.query();
 		if (is_exact)
 		{
-			printLogsToFile(main_outputFile, "Exact mean = " << mean);
+			printLogsToFile(main_outputFile, "Exact sum = " << sum);
 		}
 
 		if (is_exact_slack)
 		{
-			mean = exactSlackSumming.query(windowSizeMistake);
-			printLogsToFile(main_outputFile, "Exact mean with slack window = " << mean <<
+			sum = exactSlackSumming.query(windowSizeMistake);
+			printLogsToFile(main_outputFile, "Exact sum with slack window = " << sum <<
 					", window size slackiness = " << windowSizeMistake);
 		}
 
 		if(is_add_slack)
 		{
-			mean = addSlackMistake.query(windowSizeMistake);
-			printLogsToFile(main_outputFile, "Mean with additive mistake slack window = " << mean <<
+			sum = addSlackMistake.query(windowSizeMistake);
+			printLogsToFile(main_outputFile, "Sum with additive mistake slack window = " << sum <<
 					", window size slackiness = " << windowSizeMistake);
 		}
 
 		if(is_mul_slack)
 		{
-			mean = mulSlack.query(windowSizeMistake);
-			printLogsToFile(main_outputFile, "Mean with multiplicative slack window = " << mean <<
+			sum = mulSlack.query(windowSizeMistake);
+			printLogsToFile(main_outputFile, "Sum with multiplicative slack window = " << sum <<
 					", window size slackiness = " << windowSizeMistake);
 		}
 
 		if (is_add)
 		{
-			// Add a call to query function
+			sum = addMistake.query();
+			printLogsToFile(main_outputFile, "Sum with additive mistake = " << sum <<
+								", window size slackiness = " << windowSizeMistake);
 		}
 
 		if (is_mul)
