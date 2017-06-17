@@ -1,0 +1,11 @@
+	range = 3000
+	window = 100
+	tau = 1e-01
+	epsilon = 1e-05
+	iterations = 500
+	mul
+	add
+	mul_slack
+	add_slack
+	exact
+	exact_slack

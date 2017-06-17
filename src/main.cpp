@@ -4,6 +4,8 @@
 #include "utils.h"
 #include <cmath>
 #include <string>
+#include <sstream>
+#include <iomanip>
 #include "exact/exact.h"
 #include "exact_slack_window/exact_slack_window.h"
 #include "additive_mistake/additive_mistake.h"
@@ -13,10 +15,13 @@
 
 /* Namespace: */
 
+using std::setw;
+
 /* Macros: */
 
 #define NUM_OF_ITER 500
 #define INPUT_FILE_NAME "/home/compm/Summing/src/traces_by_size_only"
+#define CONF_FILE_NAME "conf"
 
 #define WINDOW_FLAG "--window"
 #define RANGE_FLAG "--range"
@@ -58,9 +63,9 @@ X(help,			"Print optional parameters",	printHelp	)
 /* Globals: */
 
 std::ofstream main_outputFile;
-uint64_t range;
-uint64_t iterations;
-uint16_t window;
+double range;
+double iterations;
+double window;
 double tau;
 double epsilon;
 
@@ -95,33 +100,40 @@ double epsilon;
 */
 void printHelp()
 {
-	std::cout << "The parameters are:" << std::endl << std::endl;
+	std::cout << "The parameters are:" << std::endl << "(Defult parameters configurable in "
+			<< CONF_FILE_NAME << ")" << std::endl << std::endl;
+	std::cout << std::setfill( ' ' );
 	#define X(_paramName, _paramDescription) \
-		std::cout << "--" << #_paramName << " - " << _paramDescription << std::endl;
+		std::cout << std::setw(2) << right << "--" << #_paramName << \
+		std::setw(20 - 1 - string(#_paramName).size()) << \
+		" " << std::setw(20) << _paramDescription << std::endl;
 		FLAGS_WITHOUT_VALUE_TABLE;
 	#undef X
 
+	#define X(_paramName, _paramDescription) \
+		std::cout << std::setw(2) << right << "--" << #_paramName << \
+		std::setw(20 - 1 - string(#_paramName).size()) << \
+		" " << std::setw(20) << _paramDescription << std::endl;
+		FLAGS_WITH_VALUE_TABLE;
+	#undef X
+
 	#define X(_paramName, _paramDescription, ...) \
-		std::cout << "--" << #_paramName << " - " << _paramDescription << std::endl;
+		std::cout << std::setw(2) << right << "--" << #_paramName << \
+		std::setw(20 - 1 - string(#_paramName).size()) << \
+		" " << std::setw(20) << _paramDescription << std::endl;
 		FLAGS_WITH_CALLBACK_TABLE;
 	#undef X
 
-	#define X(_paramName, _paramDescription) \
-		std::cout << "--" << #_paramName << " - " << _paramDescription << std::endl;
-		FLAGS_WITH_VALUE_TABLE;
-	#undef X
+	std::cout << std::endl;
+	exit(0);
 }
 
 int main(int argc, char* argv[])
 {
-	range = 3000;
-	window = 100;
-	tau = pow(10, -1);
-	epsilon = pow(10, -5);
-	iterations = 500;
 	uint64_t windowSizeMistake = 0;
 	string packetSizeInString = "";
 	unsigned counter = 0;
+	ifstream confFile(CONF_FILE_NAME);
 
 	#define X(_paramName, ...) \
 		_paramName##Flag = string("--") + string(#_paramName);
@@ -138,39 +150,64 @@ int main(int argc, char* argv[])
 		FLAGS_WITH_VALUE_TABLE
 	#undef X
 
-#define X(_paramName, ...) \
-	bool is_##_paramName = false;
-	FLAGS_WITHOUT_VALUE_TABLE
-#undef X
+	#define X(_paramName, ...) \
+		bool is_##_paramName = false;
+		FLAGS_WITHOUT_VALUE_TABLE
+	#undef X
 
-	for (int argIdx = 1; argIdx < argc - 1; argIdx++)
+	while (!confFile.eof())
+	{
+		string param("");
+		string value("");
+		confFile >> param;
+
+		#define X(_paramName, ...) 									\
+			if (!param.compare(#_paramName)) 						\
+			{ 														\
+				is_##_paramName = true;								\
+			}
+			FLAGS_WITHOUT_VALUE_TABLE
+		#undef X
+
+		#define X(_paramName, ...) \
+			if (!param.compare(#_paramName))	 					\
+			{ 														\
+				confFile >> value;									\
+				confFile >> value;									\
+				_paramName = stod(value);							\
+			}
+			FLAGS_WITH_VALUE_TABLE
+		#undef X
+	}
+
+	for (int argIdx = 1; argIdx < argc; argIdx++)
 	{
 		string arg(argv[argIdx]);
 
-	#define X(_paramName, ...) 									\
-		if (!arg.compare(string("--") + string(#_paramName))) 	\
-		{ 														\
-			is_##_paramName = true;								\
-		}
-		FLAGS_WITHOUT_VALUE_TABLE
-	#undef X
+		#define X(_paramName, ...) 									\
+			if (!arg.compare(string("--") + string(#_paramName))) 	\
+			{ 														\
+				is_##_paramName = true;								\
+			}
+			FLAGS_WITHOUT_VALUE_TABLE
+		#undef X
 
-	#define X(_paramName, _paramDescription, callback) 			\
-		if (!arg.compare(string("--") + string(#_paramName))) 	\
-		{ 														\
-			callback();											\
-		}
-		FLAGS_WITH_CALLBACK_TABLE
-	#undef X
+		#define X(_paramName, _paramDescription, callback) 			\
+			if (!arg.compare(string("--") + string(#_paramName))) 	\
+			{ 														\
+				callback();											\
+			}
+			FLAGS_WITH_CALLBACK_TABLE
+		#undef X
 
-	#define X(_paramName, ...) \
-		if (!arg.compare(string("--") + string(#_paramName))) 	\
-		{ 														\
-			argIdx++;											\
-			_paramName = atoll(argv[argIdx]);					\
-		}
-		FLAGS_WITH_VALUE_TABLE
-	#undef X
+		#define X(_paramName, ...) \
+			if (!arg.compare(string("--") + string(#_paramName))) 	\
+			{ 														\
+				argIdx++;											\
+				_paramName = atof(argv[argIdx]);					\
+			}
+			FLAGS_WITH_VALUE_TABLE
+		#undef X
 	}
 
 	std::ifstream input;
@@ -193,6 +230,22 @@ int main(int argc, char* argv[])
 		throw std::bad_alloc();
 	}
 
+	std::stringstream ss;
+
+	ss << "Starting to sum, with parameters:" << std::endl;
+
+	#define X(_paramName, _paramDescription) \
+		 ss << #_paramName << " = " << _paramName << std::endl;
+		FLAGS_WITH_VALUE_TABLE;
+	#undef X
+
+	#define X(_paramName, _paramDescription) \
+		 ss << #_paramName << " = " << ((is_##_paramName) ? "true" : "false") << std::endl;
+		FLAGS_WITHOUT_VALUE_TABLE;
+	#undef X
+
+	printLogsToFile(std::cout, ss.str());
+
 	ExactSumming exactSumming(range, window);
 	ExactSlackSumming exactSlackSumming(range, window, tau);
 	AdditiveSlackMistake addSlackMistake(window, range, tau, epsilon);
@@ -212,10 +265,12 @@ int main(int argc, char* argv[])
 		{
 			exactSlackSumming.update(packetSize);
 		}
+
 		if (is_add_slack)
 		{
 			addSlackMistake.update(packetSize);
 		}
+
 		if (is_mul_slack)
 		{
 			mulSlack.update(packetSize);
