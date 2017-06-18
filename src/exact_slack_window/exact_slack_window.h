@@ -30,7 +30,7 @@ class ExactSlackSumming
     /* The size of the window to sum */
     const uint64_t window;
 
-    /* The average of the window */
+    /* The sum of the window */
     uint64_t sum;
 
     /* The minimum between the number of elements
@@ -55,19 +55,20 @@ class ExactSlackSumming
 
 public:
 
-    /* Contructors: */
+    /* Constructors: */
 
     ExactSlackSumming(
-    		const uint64_t& r,
-			const uint64_t& w,
-			const double& t);
+    		const uint64_t& _range,
+			const uint64_t& _window,
+			const double& _tau);
+
+    /* Destructors: */
 
     ~ExactSlackSumming();
 
     /* API: */
 
-    void update(
-    		const uint16_t& packetSize);
+    void update(const uint16_t& packetSize);
 
     double query(uint64_t& windowSizeMistake) const;
 };

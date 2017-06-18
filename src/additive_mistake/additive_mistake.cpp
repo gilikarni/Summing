@@ -20,14 +20,7 @@ AdditiveMistake::AdditiveMistake(
 	blockSize((uint64_t)floor(window*(2*epsilon - (1/pow(2, v))))),
 	epsilon(_epsilon), bitSetIndex(0), blockIndex(0)
 {
-	if ((1/_epsilon) <= _window*(1 - (1/log(_window))))
-	{
-		bLargeEpsilon = true;
-	}
-	else
-	{
-		/* Small epsilon */
-	}
+	bLargeEpsilon = (1/_epsilon) <= _window*(1 - (1/log(_window)));
 }
 
 /* Static functions: */

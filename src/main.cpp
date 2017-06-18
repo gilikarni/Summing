@@ -160,15 +160,6 @@ int main(int argc, char* argv[])
 		string param("");
 		string value("");
 		confFile >> param;
-
-		#define X(_paramName, ...) 									\
-			if (!param.compare(#_paramName)) 						\
-			{ 														\
-				is_##_paramName = true;								\
-			}
-			FLAGS_WITHOUT_VALUE_TABLE
-		#undef X
-
 		#define X(_paramName, ...) \
 			if (!param.compare(#_paramName))	 					\
 			{ 														\
@@ -180,6 +171,8 @@ int main(int argc, char* argv[])
 		#undef X
 	}
 
+	bool bAlgoDefined = false;
+
 	for (int argIdx = 1; argIdx < argc; argIdx++)
 	{
 		string arg(argv[argIdx]);
@@ -188,6 +181,7 @@ int main(int argc, char* argv[])
 			if (!arg.compare(string("--") + string(#_paramName))) 	\
 			{ 														\
 				is_##_paramName = true;								\
+				bAlgoDefined = true;								\
 			}
 			FLAGS_WITHOUT_VALUE_TABLE
 		#undef X
@@ -208,6 +202,26 @@ int main(int argc, char* argv[])
 			}
 			FLAGS_WITH_VALUE_TABLE
 		#undef X
+	}
+
+	if (!bAlgoDefined)
+	{
+		confFile.clear();
+		confFile.seekg(0, confFile.beg);
+		while (!confFile.eof())
+		{
+			string param("");
+			string value("");
+			confFile >> param;
+
+			#define X(_paramName, ...) 									\
+				if (!param.compare(#_paramName)) 						\
+				{ 														\
+					is_##_paramName = true;								\
+				}
+				FLAGS_WITHOUT_VALUE_TABLE
+			#undef X
+		}
 	}
 
 	std::ifstream input;
@@ -251,6 +265,7 @@ int main(int argc, char* argv[])
 	AdditiveSlackMistake addSlackMistake(window, range, tau, epsilon);
 	AdditiveMistake addMistake(range, window, epsilon);
 	MultiplicativeMistakeSlackSumming mulSlack(range, window, tau, epsilon);
+	MultiplicativeMistake mulMistake(range, window, epsilon);
 
 	while (getline(input, packetSizeInString) && counter++ < iterations)
 	{
@@ -284,7 +299,7 @@ int main(int argc, char* argv[])
 
 		if (is_mul)
 		{
-			// Add a call to update function
+			mulMistake.update(packetSize);
 		}
 
 		double sum = exactSumming.query();
@@ -323,7 +338,7 @@ int main(int argc, char* argv[])
 
 		if (is_mul)
 		{
-			// Add a call to query function
+			sum = mulMistake.query();
 		}
 	}
 	return 0;
