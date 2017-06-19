@@ -10,19 +10,19 @@
 /* Includes: */
 
 #include <stdint.h>
-#include <list>
+#include <vector>
 #include <bitset>
 #include <cmath>
 
 /* Namespace: */
 
-using std::list;
+using std::vector;
 using std::pair;
 using std::bitset;
 
 /* Types: */
 
-typedef list< pair<uint64_t, uint64_t> > expHistogram;
+typedef vector< pair<uint64_t, uint64_t> > expHistogram;
 
 class BasicCounting
 {
@@ -63,7 +63,9 @@ public:
 
     /* API */
 
-    void update(const bitset<1>& arrivingItem);
+    void update(bool bPromoteIndexes);
+
+    void updateEH();
 
     double query() const;
 };

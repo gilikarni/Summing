@@ -61,7 +61,7 @@ public:
     AdditiveMistake(
     		const uint64_t& _range,
 			const uint16_t& _window,
-			const uint64_t& _epsilon);
+			const double& _epsilon);
 
     /* API: */
 

@@ -1,6 +1,6 @@
 
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Werror -pedantic -ggdb -I. -Wextra -lstdc++
+CXXFLAGS = -std=c++11 -Wall -Werror -pedantic -ggdb 
 
 ifeq ($(DEBUG),1)
   CXXFLAGS += -g -O0

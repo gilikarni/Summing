@@ -1,7 +1,7 @@
-	range = 3000
-	window = 100
-	tau = 1e-01
-	epsilon = 1e-05
+	range = 1500
+	window = 10
+	tau = 0.2
+	epsilon = 1e-01
 	iterations = 500
 	mul
 	add

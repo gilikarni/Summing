@@ -26,6 +26,69 @@ BasicCounting::~BasicCounting()
 /* API: */
 
 /*
+ * Function name: BasicCounting::updateEH
+ *
+ * Description:
+ *  Update the EH - merge buckets and remove all the expired elements.
+ *
+ * Parameters:
+ *  None
+ *
+ * Return values:
+ *  None
+*/
+void BasicCounting::updateEH()
+{
+	/* Remove expired elements */
+	while (!EH.empty() && EH.front().second > expiryTime)
+	{
+		totalSum -= EH.front().first;
+		EH.erase(EH.begin());
+		if (EH.empty())
+		{
+			lastSum = 0;
+		}
+		else
+		{
+			lastSum = EH.front().first;
+		}
+	}
+
+	/* Merge buckets */
+
+	bool reachedEnd = false;
+
+	while (!reachedEnd)
+	{
+		uint64_t counter = 0, sizeTocountOf = 0, index = EH.size() - 1;
+		expHistogram::reverse_iterator i = EH.rbegin();
+		for (; EH.rend() != i; i++)
+		{
+			if (sizeTocountOf < i->first)
+			{
+				if (counter > (k + 1)/2)
+				{
+					break;
+				}
+				index--;
+				sizeTocountOf = i->first;
+				counter = 0;
+			}
+			counter++;
+		}
+
+		if (counter <= (k + 1)/2)
+		{
+			reachedEnd = true;
+			break;
+		}
+
+		EH[index - 1].first += EH[index].first;
+		EH.erase(EH.begin() + index);
+	}
+}
+
+/*
  * Function name: BasicCounting::update
  *
  * Description:
@@ -33,75 +96,22 @@ BasicCounting::~BasicCounting()
  *
  * Parameters:
  *  arrivingItem - The size of the new bit
+ *  bPromoteIndexes - should the indexes be promoted. (only at the first 1 in a
+ *  number)
  *
  * Return values:
  *  None
 */
-void BasicCounting::update(const bitset<1>& arrivingItem)
+void BasicCounting::update(bool bPromoteIndexes)
 {
-	expiryTime = (expiryTime + 1) % window;
-	lastArrivalTime = (lastArrivalTime + 1) % window;
-
-	if (!EH.empty() && EH.back().second > expiryTime)
+	if (bPromoteIndexes)
 	{
-		totalSum -= EH.back().first;
-		EH.remove(EH.back());
-		if (EH.empty())
-		{
-			lastSum = 0;
-		}
-		else
-		{
-			lastSum = EH.back().first;
-		}
-	}
-
-	if (0 == arrivingItem[0])
-	{
-		return;
+		expiryTime = (expiryTime + 1) % window;
+		lastArrivalTime = (lastArrivalTime + 1) % window;
 	}
 
 	/* The element is 1 */
-	EH.push_front(std::make_pair(1, lastArrivalTime));
-
-	bool reachedEnd = false;
-
-	/* Update list */
-
-	while (!reachedEnd)
-	{
-		uint64_t counter = 0, sizeTocountOf = 0, indexToStartCounting = 0;
-		for (auto& i : EH)
-		{
-			if (sizeTocountOf < i.first)
-			{
-				if (counter > (k + 1)/2)
-				{
-					break;
-				}
-				else
-				{
-					indexToStartCounting += counter;
-				}
-			}
-		}
-
-		if (counter >= (k + 1)/2)
-		{
-			reachedEnd = true;
-			break;
-		}
-
-		expHistogram::iterator iter1 = EH.begin();
-		expHistogram::iterator iter2 = EH.begin();
-
-		std::advance(iter1, indexToStartCounting);
-		std::advance(iter2, indexToStartCounting + 1);
-
-		(*iter1).first += (*iter2).first;
-
-		EH.remove(*iter2);
-	}
+	EH.push_back(std::make_pair(1, lastArrivalTime));
 }
 
 /*
@@ -131,7 +141,7 @@ MultiplicativeMistake::MultiplicativeMistake(
 			const uint64_t& _range,
 			const uint64_t& _window,
 			const double& _epsilon) :
-					basic(_range * _window, _epsilon), range(_range)
+					basic(_window, _epsilon), range(_range)
 {
 }
 
@@ -158,10 +168,7 @@ MultiplicativeMistake::~MultiplicativeMistake()
 */
 void MultiplicativeMistake::update(const uint16_t& packetSize)
 {
-	for (uint16_t i = 0; i < packetSize; i++)
-	{
-		basic.update(bitset<1>("1"));
-	}
+	bool bFirst = true;
 
 	if (range < packetSize)
 	{
@@ -169,10 +176,13 @@ void MultiplicativeMistake::update(const uint16_t& packetSize)
 		throw std::out_of_range("ERROR!! packetSize is bigger then range");
 	}
 
-	for (uint16_t i = 0; i < (range - packetSize); i++)
+	for (uint16_t i = 0; i < packetSize; i++)
 	{
-		basic.update(bitset<1>("0"));
+		basic.update(bFirst);
+		bFirst = false;
 	}
+
+	basic.updateEH();
 }
 
 /*

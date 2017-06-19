@@ -7,6 +7,8 @@
 
 /* Macros: */
 
+#define minus_inf -1
+
 /* Globals */
 
 std::ofstream MultiplicativeMistakeSlackSumming_outputFile;
@@ -66,6 +68,11 @@ MultiplicativeMistakeSlackSumming::~MultiplicativeMistakeSlackSumming()
 */
 static double calcRo(const double& epsilon, const double& y)
 {
+	if (0 == y)
+	{
+		return minus_inf;
+	}
+
 	double ro = log(y) / log (1 + epsilon/2);
 
 	return floor(ro);
@@ -79,13 +86,19 @@ static double calcRo(const double& epsilon, const double& y)
  *
  * Parameters:
  *  epsilon - The allowed mistake in the sum
- *  x - the number to round.
+ *  x - the number to round
  *
  * Return values:
  *  the rounded result
 */
-static double roundDown(const double& epsilon, const double& x)
+static double roundDown(const double& epsilon, const double& ro)
 {
+	double x = 0;
+	if (minus_inf != ro)
+	{
+		x = pow(1.0 + epsilon/2.0, ro);
+	}
+
 	double k = ceil(4/epsilon);
 
 	return floor(x * k)/k;
@@ -113,11 +126,9 @@ void MultiplicativeMistakeSlackSumming::update(const uint16_t& packetSize)
 	if (diff == blockSize)
 	{
 		double ro = calcRo(epsilon, (double)lastElements);
-		elements.push(ro);
-		sum += roundDown(epsilon, pow(1 + epsilon/2, ro));
-		ro = elements.front();
+		sum += roundDown(epsilon, ro) - roundDown(epsilon, elements.front());
 		elements.pop();
-		sum -= roundDown(epsilon, pow(1 + epsilon/2, ro));
+		elements.push(ro);
 		lastElements = 0;
 		diff = 0;
 	}
@@ -138,9 +149,8 @@ void MultiplicativeMistakeSlackSumming::update(const uint16_t& packetSize)
 */
 double MultiplicativeMistakeSlackSumming::query(uint64_t& windowSizeMistake) const
 {
-	double resultSum = sum + lastElements;
 	windowSizeMistake = diff;
 
-	return resultSum;
+	return sum + lastElements;
 }
 

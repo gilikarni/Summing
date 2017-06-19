@@ -26,7 +26,7 @@ double roundV(
 		const uint64_t& v)
 {
 	double powV = pow(2,v);
-	double closestInteger = floor(z*powV);
+	double closestInteger = round(z*powV);
 	double zz = closestInteger / powV;
 
 	return zz;

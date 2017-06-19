@@ -60,7 +60,7 @@ public:
 			const uint64_t& _window,
 			const uint64_t& _range,
 			const double& _tau,
-			const double& epsilon);
+			const double& _epsilon);
 
 	/* Destrucrors */
 
