@@ -13,8 +13,6 @@
 
 /* Globals */
 
-std::ofstream AdditiveSlackMistake_outputFile;
-
 /* Constructors: */
 
 AdditiveSlackMistake::AdditiveSlackMistake(
@@ -27,16 +25,6 @@ AdditiveSlackMistake::AdditiveSlackMistake(
 		sum(0),	diff(0), v1((int)ceil(log(1/epsilon)/log(2) + 1)),
 		v2((int)ceil(log(tau/epsilon)/log(2)))
 {
-	AdditiveSlackMistake_outputFile.open(
-			OUTPUT_FILE_NAME,
-			std::ofstream::out | std::ofstream::app);
-	if (!AdditiveSlackMistake_outputFile || !AdditiveSlackMistake_outputFile.good())
-	{
-		std::cout << "Could not open " << OUTPUT_FILE_NAME << " in "
-				<< __FILE__ << std::endl;
-		throw std::bad_alloc();
-	}
-
 	blockSize = (uint64_t)round((double(window)*tau));
 	if (0 == blockSize)
 	{
@@ -50,7 +38,6 @@ AdditiveSlackMistake::AdditiveSlackMistake(
 
 AdditiveSlackMistake::~AdditiveSlackMistake()
 {
-	AdditiveSlackMistake_outputFile.close();
 }
 
 /* Static functions: */
