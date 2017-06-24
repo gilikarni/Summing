@@ -40,7 +40,7 @@ BasicCounting::~BasicCounting()
 void BasicCounting::updateEH()
 {
 	/* Remove expired elements */
-	while (!EH.empty() && EH.front().second > expiryTime)
+	while (!EH.empty() && EH.front().second == expiryTime)
 	{
 		totalSum -= EH.front().first;
 		EH.erase(EH.begin());
@@ -102,16 +102,31 @@ void BasicCounting::updateEH()
  * Return values:
  *  None
 */
-void BasicCounting::update(bool bPromoteIndexes)
+void BasicCounting::updateWith1()
 {
-	if (bPromoteIndexes)
-	{
-		expiryTime = (expiryTime + 1) % window;
-		lastArrivalTime = (lastArrivalTime + 1) % window;
-	}
-
 	/* The element is 1 */
 	EH.push_back(std::make_pair(1, lastArrivalTime));
+}
+
+/*
+ * Function name: BasicCounting::update
+ *
+ * Description:
+ *  Update the sum of the sliding window.
+ *
+ * Parameters:
+ *  arrivingItem - The size of the new bit
+ *  bPromoteIndexes - should the indexes be promoted. (only at the first 1 in a
+ *  number)
+ *
+ * Return values:
+ *  None
+*/
+void BasicCounting::updateTimeStamps()
+{
+	expiryTime = (expiryTime + 1) % 2*window;
+	lastArrivalTime = (lastArrivalTime + 1) % 2*window;
+	return;
 }
 
 /*
@@ -168,18 +183,17 @@ MultiplicativeMistake::~MultiplicativeMistake()
 */
 void MultiplicativeMistake::update(const uint16_t& packetSize)
 {
-	bool bFirst = true;
-
 	if (range < packetSize)
 	{
 		std::cerr << "ERROR!! packetSize is bigger then range" << std::endl;
 		throw std::out_of_range("ERROR!! packetSize is bigger then range");
 	}
 
+	basic.updateTimeStamps();
+
 	for (uint16_t i = 0; i < packetSize; i++)
 	{
-		basic.update(bFirst);
-		bFirst = false;
+		basic.updateWith1();
 	}
 
 	basic.updateEH();

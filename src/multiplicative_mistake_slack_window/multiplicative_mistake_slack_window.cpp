@@ -22,7 +22,7 @@ MultiplicativeMistakeSlackSumming::MultiplicativeMistakeSlackSumming(
 			const double& _epsilon) :
 			range(_range), window(_window), sum(0), tau(_tau),
 			epsilon(_epsilon), lastElements(0),
-			elements(std::deque<double>((int)ceil(1/_tau), 0)), diff(0)
+			elements((int)ceil(1/_tau), 0), diff(0)
 {
 	MultiplicativeMistakeSlackSumming_outputFile.open(
 			OUTPUT_FILE_NAME,
@@ -94,6 +94,7 @@ static double calcRo(const double& epsilon, const double& y)
 static double roundDown(const double& epsilon, const double& ro)
 {
 	double x = 0;
+
 	if (minus_inf != ro)
 	{
 		x = pow(1.0 + epsilon/2.0, ro);
@@ -120,15 +121,27 @@ static double roundDown(const double& epsilon, const double& ro)
 */
 void MultiplicativeMistakeSlackSumming::update(const uint16_t& packetSize)
 {
+	static unsigned int counter = 0;
+
 	lastElements += packetSize;
 	diff++;
 
 	if (diff == blockSize)
 	{
 		double ro = calcRo(epsilon, (double)lastElements);
-		sum += roundDown(epsilon, ro) - roundDown(epsilon, elements.front());
-		elements.pop();
-		elements.push(ro);
+
+		if (counter < window / blockSize)
+		{
+			counter++;
+			sum += roundDown(epsilon, ro);
+		}
+		else
+		{
+			sum += roundDown(epsilon, ro) - roundDown(epsilon, elements.back());
+		}
+
+		elements.pop_back();
+		elements.insert(elements.begin(), ro);
 		lastElements = 0;
 		diff = 0;
 	}

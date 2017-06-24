@@ -63,9 +63,11 @@ public:
 
     /* API */
 
-    void update(bool bPromoteIndexes);
+    void updateWith1();
 
     void updateEH();
+
+    void updateTimeStamps();
 
     double query() const;
 };

@@ -3,6 +3,7 @@
 #include "../utils.h"
 #include <cmath>
 #include <deque>
+#include <stdexcept>
 
 /* Namespace: */
 
@@ -20,7 +21,19 @@ AdditiveMistake::AdditiveMistake(
 	epsilon(_epsilon), bitSetIndex(0), blockIndex(0)
 {
 	bLargeEpsilon = (1./epsilon) <= (double)window*(2. - (1./log(window)));
-	blockSize = (uint64_t)round(window*(2*epsilon - (1. / pow(2., v))));
+	if (bLargeEpsilon)
+	{
+		blockSize = floor(window*(2*epsilon - (1. / pow(2., v))));
+	}
+	else
+	{
+		blockSize = window*(2*epsilon - (1. / pow(2., v)));
+	}
+
+	if (blockSize <= 0)
+	{
+		throw std::out_of_range("Non positive block size");
+	}
 }
 
 /* Static functions: */

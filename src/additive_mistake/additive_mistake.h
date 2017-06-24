@@ -41,7 +41,7 @@ class AdditiveMistake
     uint64_t v;
 
     /* The size of block to sum of the subSum - T */
-    uint64_t blockSize;
+    double blockSize;
 
 	/* The allowed mistake in the sum */
 	const double epsilon;

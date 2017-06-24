@@ -10,10 +10,10 @@
 */
 
 /* Includes: */
-#include<queue>
+#include <vector>
 #include <cstdint>
 
-using std::queue;
+using std::vector;
 
 class MultiplicativeMistakeSlackSumming
 {
@@ -37,7 +37,7 @@ class MultiplicativeMistakeSlackSumming
     uint64_t lastElements;
 
     /* 1/tau sums of window*tau elements from the elements delivered */
-    queue<double> elements;
+    vector<double> elements;
 
     /* The number of elements that was summed at the last iteration */
     uint64_t diff;

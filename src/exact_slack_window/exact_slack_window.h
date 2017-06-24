@@ -13,12 +13,12 @@
 #define NOMISTAKE_SLACKSUMMING
 
 /* Includes: */
-#include<queue>
+#include <vector>
 #include <cstdint>
 #include <fstream>
 #include <iostream>
 
-using std::queue;
+using std::vector;
 
 extern std::ofstream outputFile;
 
@@ -33,10 +33,6 @@ class ExactSlackSumming
     /* The sum of the window */
     uint64_t sum;
 
-    /* The minimum between the number of elements
-    that was alredy seen and "window" */
-    uint64_t numberOfElementsSeen;
-
     /* The percentege of the window size which is 
     aloud to add*/
     const double tau;
@@ -45,7 +41,7 @@ class ExactSlackSumming
     uint64_t lastElements;
 
     /* 1/tau sums of window*tau elements from the elements delivered */
-    queue<uint64_t> elements;
+    vector<uint64_t> elements;
 
     /* The number of elements that was summed at the last iteration */
     uint64_t diff;

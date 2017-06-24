@@ -21,14 +21,14 @@ AdditiveSlackMistake::AdditiveSlackMistake(
 		const double& _tau,
 		const double& _epsilon) :
 		window(_window), range(_range), tau(_tau), epsilon(_epsilon),
-		currentSum(0), blockSums(std::deque<uint16_t>((int)ceil(1/tau), 0)),
-		sum(0),	diff(0), v1((int)ceil(log(1/epsilon)/log(2) + 1)),
-		v2((int)ceil(log(tau/epsilon)/log(2)))
+		currentSum(0), blockSums((int)ceil(1/_tau), 0),
+		sum(0),	diff(0), v1((int)ceil(log(1/_epsilon)/log(2) + 1)),
+		v2((int)ceil(log(_tau/_epsilon)/log(2)))
 {
 	blockSize = (uint64_t)round((double(window)*tau));
 	if (0 == blockSize)
 	{
-		printLogsToFile(AdditiveSlackMistake_outputFile,
+		printLogsToFile(std::cout,
 				"ERROR: tau is too small!");
 		throw std::bad_alloc();
 	}
@@ -65,11 +65,11 @@ void AdditiveSlackMistake::update(const uint16_t& packetSize)
 
 	if (blockSize == diff)
 	{
-		sum -= blockSums.front();
-		blockSums.pop();
+		sum -= blockSums.back();
+		blockSums.pop_back();
 		double bi = roundV((double) currentSum / (double)blockSize, v2);
 		sum += bi;
-		blockSums.push(bi);
+		blockSums.insert(blockSums.begin(), bi);
 		currentSum -= blockSize*bi;
 		diff = 0;
 	}

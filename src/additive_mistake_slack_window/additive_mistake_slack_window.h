@@ -13,10 +13,10 @@
 */
 
 /* Includes: */
-#include <queue>
+#include <vector>
 #include <cstdint>
 
-using namespace std;
+using std::vector;
 
 class AdditiveSlackMistake
 {
@@ -36,10 +36,10 @@ class AdditiveSlackMistake
 	double currentSum;
 
 	/* A queue of sums of the blocks that are currently in the sum */
-	queue<uint16_t> blockSums;
+	vector<double> blockSums;
 
 	/* The current sum - the sum of the elements in blockSums*/
-	uint16_t sum;
+	double sum;
 
 	/* The difference the actual window size and the desired window size -
 	 * The number of elements summed to currentSum

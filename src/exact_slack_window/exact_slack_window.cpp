@@ -19,7 +19,7 @@ ExactSlackSumming::ExactSlackSumming(
 			const uint64_t& _window,
 			const double& _tau) :
 		range(_range), window(_window), sum(0), tau(_tau), lastElements(0),
-		elements(std::deque<uint64_t>((int)ceil(1/tau), 0)), diff(0)
+		elements((int)ceil(1/tau), 0), diff(0)
 {
 	blockSize = (uint64_t)round((double(window)*tau));
 
@@ -57,19 +57,17 @@ ExactSlackSumming::~ExactSlackSumming()
 */
 void ExactSlackSumming::update(const uint16_t& packetSize)
 {
-	numberOfElementsSeen++;
-
 	lastElements += packetSize;
 	diff++;
 
 	if (blockSize == diff)
 	{
-		elements.push(lastElements);
+		elements.insert(elements.begin(), lastElements);
 		sum += lastElements;
 		lastElements = 0;
 		diff = 0;
 		sum -= elements.back();
-		elements.pop();
+		elements.pop_back();
 	}
 }
 
