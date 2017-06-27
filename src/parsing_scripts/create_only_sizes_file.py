@@ -2,7 +2,6 @@
 
 import sys
 
-
 def main():
     if len(sys.argv) < 2:
         sys.exit("No input file was entered\n")

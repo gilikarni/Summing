@@ -1,6 +1,6 @@
 	range = 1500
-	window = 4
-	tau = 0.25
+	window = 200
+	tau = 0.2
 	epsilon = 1e-01
 	iterations = 500
 	mul

@@ -12,10 +12,10 @@
 #define ADDOMISTAKE_ACCURATESUMMING
 
 /* Includes: */
-#include <bitset>
-#include <queue>
+#include <vector>
+#include <stdint.h>
 
-using std::bitset;
+using std::vector;
 
 class AdditiveMistake
 {
@@ -29,10 +29,10 @@ class AdditiveMistake
     uint64_t sum;
 
     /* The last "window" summed T elemants - for large epsilon values */
-    bitset<32> elements;
+    vector<bool> elements;
 
     /* The last "window" summed w elemants - for small epsilon values */
-    std::queue<double> lastElements;
+    vector<double> lastElements;
 
     /* The temporal sum of the last elements - y */
     double subSum;

@@ -57,33 +57,40 @@ void BasicCounting::updateEH()
 	/* Merge buckets */
 
 	bool reachedEnd = false;
+	uint64_t treshHold = ((k + 1)/2) + 2;
 
 	while (!reachedEnd)
 	{
-		uint64_t counter = 0, sizeTocountOf = 0, index = EH.size() - 1;
-		expHistogram::reverse_iterator i = EH.rbegin();
-		for (; EH.rend() != i; i++)
+		uint64_t counter = 0, sizeToCountOf = 0, index = EH.size();
+		expHistogram::reverse_iterator iter = EH.rbegin();
+		for (; EH.rend() != iter; iter++)
 		{
-			if (sizeTocountOf < i->first)
+			if (sizeToCountOf < iter->first)
 			{
-				if (counter > (k + 1)/2)
+				if (counter >= treshHold)
 				{
 					break;
 				}
-				index--;
-				sizeTocountOf = i->first;
+				sizeToCountOf = iter->first;
 				counter = 0;
 			}
+			index--;
 			counter++;
 		}
 
-		if (counter <= (k + 1)/2)
+		if (counter < treshHold)
 		{
 			reachedEnd = true;
 			break;
 		}
 
-		EH[index - 1].first += EH[index].first;
+		if (0 == index)
+		{
+			/* Reached the last element */
+			lastSum = EH[index + 1].first + EH[index].first;
+		}
+
+		EH[index + 1].first += EH[index].first;
 		EH.erase(EH.begin() + index);
 	}
 }
@@ -105,7 +112,13 @@ void BasicCounting::updateEH()
 void BasicCounting::updateWith1()
 {
 	/* The element is 1 */
+	if (EH.empty())
+	{
+		lastSum = 1;
+	}
+
 	EH.push_back(std::make_pair(1, lastArrivalTime));
+	totalSum++;
 }
 
 /*
@@ -124,8 +137,8 @@ void BasicCounting::updateWith1()
 */
 void BasicCounting::updateTimeStamps()
 {
-	expiryTime = (expiryTime + 1) % 2*window;
-	lastArrivalTime = (lastArrivalTime + 1) % 2*window;
+	expiryTime = (expiryTime + 1) % (2*window);
+	lastArrivalTime = (lastArrivalTime + 1) % (2*window);
 	return;
 }
 

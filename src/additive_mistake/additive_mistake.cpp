@@ -16,14 +16,15 @@ AdditiveMistake::AdditiveMistake(
 	const uint16_t& _window,
 	const double& _epsilon) :
 	range(_range), window(_window), sum(0),
-	elements(), lastElements(std::deque<double>(_window, 0)),
-	subSum(0), v((uint64_t)ceil(log((1./_epsilon)*log(_window)))),
+	elements(), lastElements(_window, 0),
+	subSum(0), v((uint64_t)ceil(log((1./_epsilon)*(log(_window)/log(2)))/ (log(2)))),
 	epsilon(_epsilon), bitSetIndex(0), blockIndex(0)
 {
 	bLargeEpsilon = (1./epsilon) <= (double)window*(2. - (1./log(window)));
 	if (bLargeEpsilon)
 	{
 		blockSize = floor(window*(2*epsilon - (1. / pow(2., v))));
+		elements = vector<bool>(ceil(window / blockSize), false);
 	}
 	else
 	{
@@ -32,6 +33,7 @@ AdditiveMistake::AdditiveMistake(
 
 	if (blockSize <= 0)
 	{
+		std::cout << "Block size is " << blockSize << std::endl;
 		throw std::out_of_range("Non positive block size");
 	}
 }
@@ -65,10 +67,10 @@ void AdditiveMistake::update(const uint64_t& packatSize)
 
 		if (blockSize == blockIndex)
 		{
-			sum -= elements[bitSetIndex];
+			sum -= (elements[bitSetIndex]) ? 1: 0;
 			elements[bitSetIndex] = floor(subSum / blockSize);
-			subSum -= blockSize*elements[bitSetIndex];
-			sum += elements[bitSetIndex];
+			subSum -= blockSize*((elements[bitSetIndex]) ? 1: 0);
+			sum += (elements[bitSetIndex]) ? 1: 0;
 			bitSetIndex = (bitSetIndex + 1) % elements.size();
 			blockIndex = 0;
 		}
@@ -76,9 +78,9 @@ void AdditiveMistake::update(const uint64_t& packatSize)
 	else
 	{
 		/* Small epsilon */
-		sum -= lastElements.front();
-		lastElements.pop();
-		lastElements.push(floor((double)(subSum + xx) / blockSize));
+		sum -= lastElements.back();
+		lastElements.pop_back();
+		lastElements.insert(lastElements.begin(), floor((double)(subSum + xx) / blockSize));
 		subSum += xx - lastElements.front()*blockSize;
 		sum += lastElements.front();
 	}

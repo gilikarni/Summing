@@ -17,6 +17,7 @@
 #include <chrono>
 #include <ctime>
 #include <thread>
+#include <vector>
 
 template class std::list< pair<uint64_t,uint64_t> >;
 
@@ -50,14 +51,15 @@ X(iterations,	"The allowed number of iterations"											)
  * Second parameter is the flag's descriptor.
  */
 #define FLAGS_WITHOUT_VALUE_TABLE \
-X(mul,			"Calculate with a multiplicative mistake"							) \
-X(add,			"Calculate with an additive mistake"								) \
-X(mul_slack,	"Calculate with a multiplicative mistake and a slack window size"	) \
-X(add_slack,	"Calculate with an additive mistake and a slack window size"		) \
-X(exact,		"Calculate the exact sum"											) \
-X(exact_slack,	"Calculate the exact sum on a slack window"							) \
-X(calc_times,	"Calculate the average time, can calculate only for only one algorithm at a time.") \
-X(print_query,	"Print the sum that was queried (works only if the input is not too large)"	)
+X(mul,					"Calculate with a multiplicative mistake"											) \
+X(add,					"Calculate with an additive mistake"												) \
+X(mul_slack,			"Calculate with a multiplicative mistake and a slack window size"					) \
+X(add_slack,			"Calculate with an additive mistake and a slack window size"						) \
+X(exact,				"Calculate the exact sum"															) \
+X(exact_slack,			"Calculate the exact sum on a slack window"											) \
+X(calc_times,			"Calculate the average time, can calculate only for only one algorithm at a time."	) \
+X(calc_times_update,	"Calculate the average time, can calculate only for only one algorithm at a time."	) \
+X(print_query,			"Print the sum that was queried (works only if the input is not too large)"			)
 
 /* A table of the flags to be entered from the user and leads to a callback to be called.
  * First parameter is the flag's name.
@@ -142,21 +144,6 @@ int main(int argc, char* argv[])
 	ifstream confFile(CONF_FILE_NAME);
 
 	#define X(_paramName, ...) \
-		_paramName##Flag = string("--") + string(#_paramName);
-		FLAGS_WITHOUT_VALUE_TABLE
-	#undef X
-
-	#define X(_paramName, ...) \
-		_paramName##Flag = string("--") + string(#_paramName);
-		FLAGS_WITH_CALLBACK_TABLE
-	#undef X
-
-	#define X(_paramName, ...) \
-		_paramName##Flag = string("--") + string(#_paramName);
-		FLAGS_WITH_VALUE_TABLE
-	#undef X
-
-	#define X(_paramName, ...) \
 		bool is_##_paramName = false;
 		FLAGS_WITHOUT_VALUE_TABLE
 	#undef X
@@ -230,12 +217,12 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	if (is_calc_times)
+	if (is_calc_times || is_calc_times_update)
 	{
 		int numberOfAlgorithms = 0;
 
 		#define X(_paramName, ...) 									\
-			if (is_##_paramName)				 						\
+			if (is_##_paramName)				 					\
 			{ 														\
 				numberOfAlgorithms++;								\
 			}
@@ -298,14 +285,20 @@ int main(int argc, char* argv[])
 	double devExactSlack = 0, devAddSlack = 0, devMulSlack = 0, devAdd = 0,
 			devMul = 0, windowDevExact = 0, windowDevAdd = 0, windowDevMul = 0;
 
+	std::vector<uint64_t> sizes;
+
 	auto t_start = std::chrono::high_resolution_clock::now();
 
 	while (getline(input, packetSizeInString) && counter++ < iterations)
 	{
 		uint16_t packetSize = 0;
-		numberOfElements++;
-
 		packetSize = atoi(packetSizeInString.c_str());
+		sizes.push_back(packetSize);
+	}
+
+	for (auto packetSize : sizes)
+	{
+		numberOfElements++;
 
 		if (is_print_query)
 		{
@@ -344,7 +337,7 @@ int main(int argc, char* argv[])
 		}
 
 		double exactSum = 0;
-		if (!is_calc_times || is_exact)
+		if ((!is_calc_times || is_exact) && !is_calc_times_update)
 		{
 			exactSum = exactSumming.query();
 		}
@@ -355,7 +348,7 @@ int main(int argc, char* argv[])
 		}
 
 		double exactSlackSum = 0;
-		if (!is_calc_times  || is_exact_slack)
+		if ((!is_calc_times  || is_exact_slack) && !is_calc_times_update)
 		{
 			exactSlackSum = exactSlackSumming.query(windowSizeMistake);
 		}
@@ -373,7 +366,7 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		if(is_add_slack)
+		if(is_add_slack && !is_calc_times_update)
 		{
 			double addSalckSum = addSlackMistake.query(windowSizeMistake);
 
@@ -388,7 +381,7 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		if(is_mul_slack)
+		if(is_mul_slack && !is_calc_times_update)
 		{
 			double mulSlackSum = mulSlack.query(windowSizeMistake);
 
@@ -403,7 +396,7 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		if (is_add)
+		if (is_add && !is_calc_times_update)
 		{
 			double addSum = addMistake.query();
 
@@ -416,7 +409,7 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		if (is_mul)
+		if (is_mul && !is_calc_times_update)
 		{
 			double mulSum = mulMistake.query();
 			devMul += abs(mulSum - exactSum) / exactSum;
@@ -431,7 +424,7 @@ int main(int argc, char* argv[])
 
 	auto t_end = std::chrono::high_resolution_clock::now();
 
-	if (!is_calc_times)
+	if (!is_calc_times && !is_calc_times_update)
 	{
 		main_outputFile << "R*W*epsilon = " << range * window * epsilon <<
 		std::endl << std::endl <<
@@ -463,12 +456,14 @@ int main(int argc, char* argv[])
 		if (is_mul)
 		{
 			main_outputFile << "Summing over an exact window with a multiplicative mistake - "
-			<< devMul /numberOfElements << std::endl << std::endl;
+			<< devMul /numberOfElements << std::endl;
 		}
+
+		std::cout << std::endl;
 	}
 
 
-	if (is_calc_times)
+	if (is_calc_times || is_calc_times_update)
 	{
 		std::chrono::duration<double, std::milli> runtime = t_end - t_start;
 		main_outputFile << "Average time (in milliseconds) = " <<
