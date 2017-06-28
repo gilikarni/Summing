@@ -30,7 +30,7 @@ def main():
         file.write(header)
         call(["rm", sys.argv[1]])
         for i in xrange(int(sys.argv[2])):
-            check_call(["../obj/main_bin", "--" + algo, "--iterations", "33674081"])
+            check_call(["../obj/main_bin", "--" + algo, "--iterations", "10"])
         output_file = open(sys.argv[1], 'r+')
         mistake = []
         window = []
@@ -45,11 +45,9 @@ def main():
                 mistake.append(float(split_line[-1]))
             else:
                 window.append(float(split_line[-1]))
-        print mistake
         output = "sum: average mistake = %f (ms), standard deviation = %f (ms)\n" %(statistics.mean(mistake), statistics.stdev(mistake))
         file.write(output)
         if is_slack:
-            print window
             output = "window size: average mistake = %f (ms), standard deviation = %f (ms)\n" %(statistics.mean(window), statistics.stdev(window))
             file.write(output)  
         output_file.close()
