@@ -4,6 +4,7 @@ from subprocess import call, check_call
 import sys
 import os
 import statistics
+import pdb
 from operator import is_
 
 def main():
@@ -44,9 +45,11 @@ def main():
                 mistake.append(float(split_line[-1]))
             else:
                 window.append(float(split_line[-1]))
+        print mistake
         output = "sum: average mistake = %f (ms), standard deviation = %f (ms)\n" %(statistics.mean(mistake), statistics.stdev(mistake))
         file.write(output)
         if is_slack:
+            print window
             output = "window size: average mistake = %f (ms), standard deviation = %f (ms)\n" %(statistics.mean(window), statistics.stdev(window))
             file.write(output)  
         output_file.close()

@@ -9,8 +9,8 @@ else
   CXXFLAGS += -O2
 endif
 
-OBJDIR = ~/Summing/obj
-SRCDIR = ~/Summing/src
+OBJDIR = ../obj
+SRCDIR = .
 
 OBJ = ${OBJDIR}/additive_mistake/additive_mistake.o\
 	${OBJDIR}/additive_mistake_slack_window/additive_mistake_slack_window.o\

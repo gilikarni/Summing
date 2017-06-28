@@ -454,9 +454,14 @@ int main(int argc, char* argv[])
 
 	if (!is_calc_times && !is_calc_times_update)
 	{
-		main_outputFile << "R*W*epsilon = " << range * window * epsilon <<
+/*		main_outputFile << "R*W*epsilon = " << range * window * epsilon <<
 		std::endl << std::endl <<
-		"The average mistakes were:" << std::endl;
+		"The average mistakes were:" << std::endl;*/
+		if (is_exact)
+		{
+			main_outputFile << "Summing over an exact window with no mistake - "
+			<< 0 << std::endl;
+		}
 		if (is_exact_slack)
 		{
 			main_outputFile << "Exact summing over a slacky window - "
