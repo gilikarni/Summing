@@ -227,12 +227,6 @@ int main(int argc, char* argv[])
 				}
 				FLAGS_WITHOUT_VALUE_TABLE
 			#undef X
-
-			if (numberOfAlgorithms == 0)
-			{
-				std::cout << "No such parameter " << param << std::endl;
-				return 1;
-			}
 		}
 	}
 
