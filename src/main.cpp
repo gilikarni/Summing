@@ -169,12 +169,14 @@ int main(int argc, char* argv[])
 	for (int argIdx = 1; argIdx < argc; argIdx++)
 	{
 		string arg(argv[argIdx]);
+		int numberOfMatches = 0;
 
 		#define X(_paramName, ...) 									\
 			if (!arg.compare(string("--") + string(#_paramName))) 	\
 			{ 														\
 				is_##_paramName = true;								\
 				bAlgoDefined = true;								\
+				numberOfMatches++;									\
 			}
 			FLAGS_WITHOUT_VALUE_TABLE
 		#undef X
@@ -183,6 +185,7 @@ int main(int argc, char* argv[])
 			if (!arg.compare(string("--") + string(#_paramName))) 	\
 			{ 														\
 				callback();											\
+				numberOfMatches++;									\
 			}
 			FLAGS_WITH_CALLBACK_TABLE
 		#undef X
@@ -192,9 +195,17 @@ int main(int argc, char* argv[])
 			{ 														\
 				argIdx++;											\
 				_paramName = atof(argv[argIdx]);					\
+				numberOfMatches++;									\
 			}
 			FLAGS_WITH_VALUE_TABLE
 		#undef X
+
+		if (numberOfMatches == 0)
+		{
+			std::cout << "No such parameter " << arg << std::endl;
+			return 1;
+		}
+
 	}
 
 	if (!bAlgoDefined || is_print_query)
@@ -205,15 +216,23 @@ int main(int argc, char* argv[])
 		{
 			string param("");
 			string value("");
+			int numberOfAlgorithms = 0;
 			confFile >> param;
 
 			#define X(_paramName, ...) 									\
 				if (!param.compare(#_paramName)) 						\
 				{ 														\
+					numberOfAlgorithms++;								\
 					is_##_paramName = true;								\
 				}
 				FLAGS_WITHOUT_VALUE_TABLE
 			#undef X
+
+			if (numberOfAlgorithms == 0)
+			{
+				std::cout << "No such parameter " << param << std::endl;
+				return 1;
+			}
 		}
 	}
 
@@ -229,7 +248,7 @@ int main(int argc, char* argv[])
 			FLAGS_WITHOUT_VALUE_TABLE
 		#undef X
 
-		if (numberOfAlgorithms > 2)
+		if (numberOfAlgorithms != 2)
 		{
 			std::cout << "More then one algorithm was specified for speed check."
 					<< std::endl;
@@ -287,142 +306,157 @@ int main(int argc, char* argv[])
 
 	std::vector<uint64_t> sizes;
 
-	auto t_start = std::chrono::high_resolution_clock::now();
+	bool fileNotEnded = false;
+	std::chrono::duration<double, std::milli> runtime(0);
 
-	while (getline(input, packetSizeInString) && counter++ < iterations)
+	do
 	{
-		uint16_t packetSize = 0;
-		packetSize = atoi(packetSizeInString.c_str());
-		sizes.push_back(packetSize);
-	}
+		fileNotEnded = false;
 
-	for (auto packetSize : sizes)
-	{
-		numberOfElements++;
-
-		if (is_print_query)
+		while (getline(input, packetSizeInString) && counter++ < iterations)
 		{
-			printLogsToFile(main_outputFile,
-					"Update with packet size: " << packetSize);
+
+			uint16_t packetSize = 0;
+			packetSize = atoi(packetSizeInString.c_str());
+			sizes.push_back(packetSize);
+			if (sizes.size() == sizes.max_size()/2)
+			{
+				fileNotEnded = true;
+				break;
+			}
 		}
 
-		if (!is_calc_times || is_exact)
-		{
-			exactSumming.update(packetSize);
-		}
+		auto t_start = std::chrono::high_resolution_clock::now();
 
-		if (!is_calc_times || is_exact_slack)
+		for (auto packetSize : sizes)
 		{
-			exactSlackSumming.update(packetSize);
-		}
+			numberOfElements++;
 
-		if (is_add_slack)
-		{
-			addSlackMistake.update(packetSize);
-		}
-
-		if (is_mul_slack)
-		{
-			mulSlack.update(packetSize);
-		}
-
-		if (is_add)
-		{
-			addMistake.update(packetSize);
-		}
-
-		if (is_mul)
-		{
-			mulMistake.update(packetSize);
-		}
-
-		double exactSum = 0;
-		if ((!is_calc_times || is_exact) && !is_calc_times_update)
-		{
-			exactSum = exactSumming.query();
-		}
-
-		if (is_exact && is_print_query)
-		{
-			printLogsToFile(main_outputFile, "Exact sum = " << exactSum);
-		}
-
-		double exactSlackSum = 0;
-		if ((!is_calc_times  || is_exact_slack) && !is_calc_times_update)
-		{
-			exactSlackSum = exactSlackSumming.query(windowSizeMistake);
-		}
-
-		if (is_exact_slack)
-		{
-			devExactSlack += abs(exactSlackSum - exactSum);
-
-			windowDevExact += windowSizeMistake;
 			if (is_print_query)
 			{
 				printLogsToFile(main_outputFile,
-						"Exact sum with slack window = " << exactSlackSum <<
-						", window size slackiness = " << windowSizeMistake);
+						"Update with packet size: " << packetSize);
 			}
-		}
 
-		if(is_add_slack && !is_calc_times_update)
-		{
-			double addSalckSum = addSlackMistake.query(windowSizeMistake);
-
-			devAddSlack += abs(addSalckSum - exactSlackSum);
-
-			windowDevAdd += windowSizeMistake;
-			if (is_print_query)
+			if (!is_calc_times || is_exact)
 			{
-				printLogsToFile(main_outputFile,
-						"Sum with additive mistake slack window = " << addSalckSum <<
-						", window size slackiness = " << windowSizeMistake);
+				exactSumming.update(packetSize);
 			}
-		}
 
-		if(is_mul_slack && !is_calc_times_update)
-		{
-			double mulSlackSum = mulSlack.query(windowSizeMistake);
-
-			devMulSlack += abs(mulSlackSum - exactSlackSum) / exactSlackSum;
-
-			windowDevMul += windowSizeMistake;
-			if (is_print_query)
+			if (!is_calc_times || is_exact_slack)
 			{
-				printLogsToFile(main_outputFile,
-						"Sum with multiplicative slack window = " << mulSlackSum <<
-						", window size slackiness = " << windowSizeMistake);
+				exactSlackSumming.update(packetSize);
 			}
-		}
 
-		if (is_add && !is_calc_times_update)
-		{
-			double addSum = addMistake.query();
-
-			devAdd += abs(addSum - exactSum);
-
-			if (is_print_query)
+			if (is_add_slack)
 			{
-				printLogsToFile(main_outputFile, "Sum with additive mistake = "
-						<< addSum << ", window size slackiness = " << windowSizeMistake);
+				addSlackMistake.update(packetSize);
 			}
-		}
 
-		if (is_mul && !is_calc_times_update)
-		{
-			double mulSum = mulMistake.query();
-			devMul += abs(mulSum - exactSum) / exactSum;
-			if (is_print_query)
+			if (is_mul_slack)
 			{
-				printLogsToFile(main_outputFile,
-						"Sum with multiplicative mistake = " << mulSum <<
-						", window size slackiness = " << windowSizeMistake);
+				mulSlack.update(packetSize);
+			}
+
+			if (is_add)
+			{
+				addMistake.update(packetSize);
+			}
+
+			if (is_mul)
+			{
+				mulMistake.update(packetSize);
+			}
+
+			double exactSum = 0;
+			if ((!is_calc_times || is_exact) && !is_calc_times_update)
+			{
+				exactSum = exactSumming.query();
+			}
+
+			if (is_exact && is_print_query)
+			{
+				printLogsToFile(main_outputFile, "Exact sum = " << exactSum);
+			}
+
+			double exactSlackSum = 0;
+			if ((!is_calc_times  || is_exact_slack) && !is_calc_times_update)
+			{
+				exactSlackSum = exactSlackSumming.query(windowSizeMistake);
+			}
+
+			if (is_exact_slack)
+			{
+				devExactSlack += abs(exactSlackSum - exactSum);
+
+				windowDevExact += windowSizeMistake;
+				if (is_print_query)
+				{
+					printLogsToFile(main_outputFile,
+							"Exact sum with slack window = " << exactSlackSum <<
+							", window size slackiness = " << windowSizeMistake);
+				}
+			}
+
+			if(is_add_slack && !is_calc_times_update)
+			{
+				double addSalckSum = addSlackMistake.query(windowSizeMistake);
+
+				devAddSlack += abs(addSalckSum - exactSlackSum);
+
+				windowDevAdd += windowSizeMistake;
+				if (is_print_query)
+				{
+					printLogsToFile(main_outputFile,
+							"Sum with additive mistake slack window = " << addSalckSum <<
+							", window size slackiness = " << windowSizeMistake);
+				}
+			}
+
+			if(is_mul_slack && !is_calc_times_update)
+			{
+				double mulSlackSum = mulSlack.query(windowSizeMistake);
+
+				devMulSlack += abs(mulSlackSum - exactSlackSum) / exactSlackSum;
+
+				windowDevMul += windowSizeMistake;
+				if (is_print_query)
+				{
+					printLogsToFile(main_outputFile,
+							"Sum with multiplicative slack window = " << mulSlackSum <<
+							", window size slackiness = " << windowSizeMistake);
+				}
+			}
+
+			if (is_add && !is_calc_times_update)
+			{
+				double addSum = addMistake.query();
+
+				devAdd += abs(addSum - exactSum);
+
+				if (is_print_query)
+				{
+					printLogsToFile(main_outputFile, "Sum with additive mistake = "
+							<< addSum << ", window size slackiness = " << windowSizeMistake);
+				}
+			}
+
+			if (is_mul && !is_calc_times_update)
+			{
+				double mulSum = mulMistake.query();
+				devMul += abs(mulSum - exactSum) / exactSum;
+				if (is_print_query)
+				{
+					printLogsToFile(main_outputFile,
+							"Sum with multiplicative mistake = " << mulSum <<
+							", window size slackiness = " << windowSizeMistake);
+				}
 			}
 		}
-	}
 
-	auto t_end = std::chrono::high_resolution_clock::now();
+		auto t_end = std::chrono::high_resolution_clock::now();
+		runtime += t_end - t_start;
+	} while(fileNotEnded);
 
 	if (!is_calc_times && !is_calc_times_update)
 	{
@@ -433,18 +467,21 @@ int main(int argc, char* argv[])
 		{
 			main_outputFile << "Exact summing over a slacky window - "
 			<< devExactSlack / numberOfElements << std::endl;
+			main_outputFile << "window size average mistake - " << windowDevExact << std::endl;
 		}
 
 		if (is_add_slack)
 		{
 			main_outputFile << "Summing over a slacky window with an additive mistake - "
 			<< devAddSlack /numberOfElements << std::endl;
+			main_outputFile << "window size average mistake - " << windowDevAdd << std::endl;
 		}
 
 		if (is_mul_slack)
 		{
 			main_outputFile << "Summing over a slacky window with a multiplicative mistake - "
 			<< devMulSlack /numberOfElements << std::endl;
+			main_outputFile << "window size average mistake - " << windowDevMul << std::endl;
 		}
 
 		if (is_add)
@@ -465,7 +502,6 @@ int main(int argc, char* argv[])
 
 	if (is_calc_times || is_calc_times_update)
 	{
-		std::chrono::duration<double, std::milli> runtime = t_end - t_start;
 		main_outputFile << "Average time (in milliseconds) = " <<
 				(double)(runtime.count()) / (double)numberOfElements << std::endl;
 	}

@@ -21,7 +21,7 @@ using std::bad_alloc;
 
 /* Definitions: */
 
-#define OUTPUT_FILE_NAME "output"
+#define OUTPUT_FILE_NAME "output.txt"
 
 #define printLogsToFile(file, output) \
 file << "(" << __FILE__ << ", line " << __LINE__ << "): " << output << std::endl;

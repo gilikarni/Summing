@@ -2,6 +2,10 @@
 #include "multiplicative_mistake.h"
 #include "../utils.h"
 #include <stdexcept>
+#include <iomanip>
+#include <chrono>
+#include <ctime>
+#include <thread>
 
 /* Macros: */
 
@@ -15,6 +19,7 @@ BasicCounting::BasicCounting(
 				window(_window), lastArrivalTime(0), expiryTime(_window),
 				totalSum(0), lastSum(0), k((uint64_t)ceil(1/epsilon))
 {
+	bucketHistogram[1] = 0;
 }
 
 BasicCounting::~BasicCounting()
@@ -42,56 +47,47 @@ void BasicCounting::updateEH()
 	/* Remove expired elements */
 	while (!EH.empty() && EH.front().second == expiryTime)
 	{
-		totalSum -= EH.front().first;
+		uint64_t size = EH.front().first;
+		totalSum -= size;
+		bucketHistogram[size]--;
+		if (size > 1 && 0 == bucketHistogram[size])
+		{
+			bucketHistogram.erase(size);
+		}
 		EH.erase(EH.begin());
-		if (EH.empty())
-		{
-			lastSum = 0;
-		}
-		else
-		{
-			lastSum = EH.front().first;
-		}
 	}
 
 	/* Merge buckets */
 
-	bool reachedEnd = false;
 	uint64_t treshHold = ((k + 1)/2) + 2;
 
-	while (!reachedEnd)
+	uint16_t numberOfDifferentValues = bucketHistogram.size(), lastIndex = EH.size();
+	for (uint16_t i = 0, indexInMap = 1; i < numberOfDifferentValues; i++, indexInMap *= 2)
 	{
-		uint64_t counter = 0, sizeToCountOf = 0, index = EH.size();
-		expHistogram::reverse_iterator iter = EH.rbegin();
-		for (; EH.rend() != iter; iter++)
+		lastIndex -= bucketHistogram[indexInMap];
+		while(bucketHistogram[indexInMap] >= treshHold)
 		{
-			if (sizeToCountOf < iter->first)
+			bucketHistogram[indexInMap] -= 2;
+			if (i == numberOfDifferentValues - 1)
 			{
-				if (counter >= treshHold)
-				{
-					break;
-				}
-				sizeToCountOf = iter->first;
-				counter = 0;
+				/* Add a bigger element then already exist */
+				numberOfDifferentValues++;
+				bucketHistogram[indexInMap*2] = 0;
 			}
-			index--;
-			counter++;
+			bucketHistogram[indexInMap*2]++;
+			EH[lastIndex + 1].first += EH[lastIndex].first;
+			EH.erase(EH.begin() + lastIndex);
+			lastIndex++;
 		}
+	}
 
-		if (counter < treshHold)
-		{
-			reachedEnd = true;
-			break;
-		}
-
-		if (0 == index)
-		{
-			/* Reached the last element */
-			lastSum = EH[index + 1].first + EH[index].first;
-		}
-
-		EH[index + 1].first += EH[index].first;
-		EH.erase(EH.begin() + index);
+	if (EH.empty())
+	{
+		lastSum = 0;
+	}
+	else
+	{
+		lastSum = EH.front().first;
 	}
 }
 
@@ -118,6 +114,7 @@ void BasicCounting::updateWith1()
 	}
 
 	EH.push_back(std::make_pair(1, lastArrivalTime));
+	bucketHistogram[1]++;
 	totalSum++;
 }
 

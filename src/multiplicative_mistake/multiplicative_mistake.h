@@ -13,12 +13,16 @@
 #include <vector>
 #include <bitset>
 #include <cmath>
+#include <unordered_map>
+#include <list>
 
 /* Namespace: */
 
 using std::vector;
 using std::pair;
 using std::bitset;
+using std::unordered_map;
+using std::list;
 
 /* Types: */
 
@@ -44,10 +48,13 @@ class BasicCounting
     /* k = ceil(1/epsilon) */
     const uint64_t k;
 
-    /* A list of blocks containing the size of the bucket and the time stamp -
+    /* A vector of blocks containing the size of the bucket and the time stamp -
      * the first element in the pair is the size and the second is the time
      * stamp*/
     expHistogram EH;
+
+    /* A histogram of the block sizes, in order to merge blocks effectively */
+    std::unordered_map<uint64_t, uint64_t> bucketHistogram;
 
 public:
 
