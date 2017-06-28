@@ -21,7 +21,7 @@ def main():
         sys.exit("Should run the script from src directory")
     
     # Generate tests
-    algo_list = ["exact", "mul", "add", "exact_slack", "mul_slack", "add_slack"]
+    algo_list = ["mul", "add", "exact_slack", "mul_slack", "add_slack"]
     file = open("results", 'w');
 
     # Run over algorithms and create statistics
@@ -45,10 +45,10 @@ def main():
                 mistake.append(float(split_line[-1]))
             else:
                 window.append(float(split_line[-1]))
-        output = "sum: average mistake = %f (ms), standard deviation = %f (ms)\n" %(statistics.mean(mistake), statistics.stdev(mistake))
+        output = "sum: average mistake = %f\n" %(statistics.mean(mistake))
         file.write(output)
         if is_slack:
-            output = "window size: average mistake = %f (ms), standard deviation = %f (ms)\n" %(statistics.mean(window), statistics.stdev(window))
+            output = "window size: average mistake = %f\n" %(statistics.mean(window))
             file.write(output)  
         output_file.close()
     
