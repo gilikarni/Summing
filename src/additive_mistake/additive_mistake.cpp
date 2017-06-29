@@ -60,7 +60,8 @@ AdditiveMistake::AdditiveMistake(
 void AdditiveMistake::update(const uint64_t& packatSize)
 {
 	static double powV = pow(2,v);
-	double xx = roundV((double)packatSize / range, powV); /* x' */
+	static double RT = range * blockSize;
+	double xx = roundV((double)packatSize, powV); /* x' */
 
 	if (bLargeEpsilon)
 	{
@@ -70,8 +71,8 @@ void AdditiveMistake::update(const uint64_t& packatSize)
 		if (blockSize == blockIndex)
 		{
 			sum -= (elements[bitSetIndex]) ? 1: 0;
-			elements[bitSetIndex] = (1 == floor(subSum / blockSize)) ? true : false;
-			subSum -= blockSize*((elements[bitSetIndex]) ? 1: 0);
+			elements[bitSetIndex] = (1 == floor(subSum / RT)) ? true : false;
+			subSum -= RT*((elements[bitSetIndex]) ? 1: 0);
 			sum += (elements[bitSetIndex]) ? 1: 0;
 			bitSetIndex = (bitSetIndex + 1) % elements.size();
 			blockIndex = 0;
@@ -82,8 +83,8 @@ void AdditiveMistake::update(const uint64_t& packatSize)
 		/* Small epsilon */
 		sum -= lastElements.back();
 		lastElements.pop_back();
-		lastElements.insert(lastElements.begin(), floor((double)(subSum + xx) / blockSize));
-		subSum += xx - lastElements.front()*blockSize;
+		lastElements.insert(lastElements.begin(), floor((double)(subSum + xx) / RT));
+		subSum += xx - lastElements.front()*RT;
 		sum += lastElements.front();
 	}
 }
@@ -105,7 +106,7 @@ double AdditiveMistake::query() const
 {
 	/* Calculate only once */
 	static double constant = 1./pow(2, v+1) - (double)blockSize/2;
-	return range*((double)blockSize*sum + subSum -
+	return ((double)blockSize*sum + subSum -
 			blockIndex*subSum + constant);
 }
 
