@@ -41,7 +41,7 @@ def main():
             split_line = line.split()
             if 0 == len(split_line):
                 continue
-            if (count % 2 == 0) or (not is_slack):
+            if (count % 2 == 1) or (not is_slack):
                 mistake.append(float(split_line[-1]))
             else:
                 window.append(float(split_line[-1]))
