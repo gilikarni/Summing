@@ -47,6 +47,13 @@ CONTENTS OF THIS FILE
 ------------- 
 
  Run make from the src directory, the executable will be created in obj directory.
+ In order to run the code there needs to be a file with sizes only named 
+ traces_by_size_only.
+ There is a python script create_only_sizes_file.py which expect traces in the format:
+ 16:00:00.000001 99.158.44.6.42754 202
+ And creates a file from the sizes, any trace which has the sizes at the end of
+ the line will work.
+ The output of the program is at output.txt.
 
  CONFIGURATION
 --------------
@@ -60,3 +67,18 @@ CONTENTS OF THIS FILE
  	2. It is possible to configure all the parameters using thre command line.
  	In order to see the possible parameters use the flag "--help".
  	The parameters are:
+ 	--mul                Calculate with a multiplicative mistake
+	--add                Calculate with an additive mistake
+	--mul_slack          Calculate with a multiplicative mistake and a slack window size
+	--add_slack          Calculate with an additive mistake and a slack window size
+	--exact              Calculate the exact sum
+	--exact_slack        Calculate the exact sum on a slack window
+	--calc_times         Calculate the average time for updates and query, can calculate only for only one algorithm at a time.
+	--calc_times_update  Calculate the average time for updates, can calculate only for only one algorithm at a time.
+	--print_query        Print the sum that was queried (works only if the input is not too large)
+	--window             The size of the window to sum of
+	--range              The range of the packet sizes
+	--epsilon            The allowed mistake in the sum
+	--tau                The allowed mistake in the window size
+	--iterations         The allowed number of iterations
+	--help               Print optional parameters
