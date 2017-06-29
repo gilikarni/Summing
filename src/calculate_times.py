@@ -30,7 +30,7 @@ def main():
         for c in calc_list:
             call(["rm", sys.argv[1]])
             for i in xrange(int(sys.argv[2])):
-                check_call(["../obj/main_bin", "--" + algo, "--" + c, "--iterations", "1000000"])
+                check_call(["../obj/main_bin", "--" + algo, "--" + c, "--iterations", "1000"])
             output_file = open(sys.argv[1], 'r+')
     	    times = []
             for line in output_file:

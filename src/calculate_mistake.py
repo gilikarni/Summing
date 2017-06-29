@@ -30,7 +30,7 @@ def main():
         file.write(header)
         call(["rm", sys.argv[1]])
         for i in xrange(int(sys.argv[2])):
-            check_call(["../obj/main_bin", "--" + algo, "--iterations", "10"])
+            check_call(["../obj/main_bin", "--" + algo, "--iterations", "1000"])
         output_file = open(sys.argv[1], 'r+')
         mistake = []
         window = []
