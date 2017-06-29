@@ -16,16 +16,15 @@
  *
  * Parameters:
  *  z - the number to round
- *  v - the resolution to round to
+ *  powV - the resolution to round to
  *
  * Return values:
  *  None
 */
 double roundV(
 		const double& z,
-		const uint64_t& v)
+		const uint64_t& powV)
 {
-	double powV = pow(2,v);
 	double closestInteger = round(z*powV);
 	double zz = closestInteger / powV;
 

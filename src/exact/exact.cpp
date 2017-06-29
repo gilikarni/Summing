@@ -16,7 +16,7 @@ ExactSumming::ExactSumming(
 		const uint64_t& _range,
 		const uint16_t& _window) :
 		range(_range), window(_window), sum(0),
-		elements(std::deque<uint16_t>(window, 0))
+		elements(window, 0)
 {
 	ExactSumming_outputFile.open(
 			OUTPUT_FILE_NAME,
@@ -53,10 +53,10 @@ ExactSumming::~ExactSumming()
 */
 void ExactSumming::update(const uint16_t& packatSize)
 {
-	elements.push(packatSize);
+	elements.insert(elements.begin(), packatSize);
 	sum += packatSize;
-	sum -= elements.front();
-	elements.pop();
+	sum -= elements.back();
+	elements.pop_back();
 }
 
 /*

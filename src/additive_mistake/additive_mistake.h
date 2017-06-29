@@ -25,8 +25,8 @@ class AdditiveMistake
     /* The size of the window to sum -W */
     const uint64_t window;
 
-    /* The average of the window */
-    uint64_t sum;
+    /* The sum of the window */
+    double sum;
 
     /* The last "window" summed T elemants - for large epsilon values */
     vector<bool> elements;

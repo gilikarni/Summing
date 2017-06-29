@@ -58,7 +58,9 @@ AdditiveSlackMistake::~AdditiveSlackMistake()
 */
 void AdditiveSlackMistake::update(const uint16_t& packetSize)
 {
-	double x = roundV((double)packetSize / (double)range, v1);
+	static double powV1 = pow(2, v1);
+	static double powV2 = pow(2, v2);
+	double x = roundV((double)packetSize / (double)range, powV1);
 
 	currentSum += x;
 	diff++;
@@ -67,7 +69,7 @@ void AdditiveSlackMistake::update(const uint16_t& packetSize)
 	{
 		sum -= blockSums.back();
 		blockSums.pop_back();
-		double bi = roundV((double) currentSum / (double)blockSize, v2);
+		double bi = roundV((double) currentSum / (double)blockSize, powV2);
 		sum += bi;
 		blockSums.insert(blockSums.begin(), bi);
 		currentSum -= blockSize*bi;

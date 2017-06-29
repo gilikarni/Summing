@@ -16,13 +16,13 @@
 #define NOMISTAKE_ACCURATESUMMING
 
 /* Includes: */
-#include <queue>
+#include <vector>
 #include <cstdint>
 #include <fstream>
 #include <iostream>
 
 
-using std::queue;
+using std::vector;
 
 extern std::ofstream outputFile;
 
@@ -38,7 +38,7 @@ class ExactSumming
     double sum;
 
     /* The last "window" elemants */
-    queue<uint16_t> elements;
+    vector<uint16_t> elements;
 
 public:
 

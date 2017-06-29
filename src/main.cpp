@@ -454,11 +454,6 @@ int main(int argc, char* argv[])
 
 	if (!is_calc_times && !is_calc_times_update)
 	{
-		if (is_exact)
-		{
-			main_outputFile << "Summing over an exact window with no mistake - "
-			<< 0 << std::endl;
-		}
 		if (is_exact_slack)
 		{
 			main_outputFile << "Exact summing over a slacky window - "
