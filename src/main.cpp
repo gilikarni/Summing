@@ -414,6 +414,7 @@ int main(int argc, char* argv[])
 				devMulSlack += abs(mulSlackSum - exactSlackSum) / exactSlackSum;
 
 				windowDevMul += windowSizeMistake;
+
 				if (is_print_query)
 				{
 					printLogsToFile(main_outputFile,
@@ -458,21 +459,21 @@ int main(int argc, char* argv[])
 		{
 			main_outputFile << "Exact summing over a slacky window - "
 			<< devExactSlack / numberOfElements << std::endl;
-			main_outputFile << "window size average mistake - " << windowDevExact << std::endl;
+			main_outputFile << "window size average mistake - " << windowDevExact / numberOfElements << std::endl;
 		}
 
 		if (is_add_slack)
 		{
 			main_outputFile << "Summing over a slacky window with an additive mistake - "
 			<< devAddSlack /numberOfElements << std::endl;
-			main_outputFile << "window size average mistake - " << windowDevAdd << std::endl;
+			main_outputFile << "window size average mistake - " << windowDevAdd/ numberOfElements << std::endl;
 		}
 
 		if (is_mul_slack)
 		{
 			main_outputFile << "Summing over a slacky window with a multiplicative mistake - "
 			<< devMulSlack /numberOfElements << std::endl;
-			main_outputFile << "window size average mistake - " << windowDevMul << std::endl;
+			main_outputFile << "window size average mistake - " << windowDevMul / numberOfElements << std::endl;
 		}
 
 		if (is_add)

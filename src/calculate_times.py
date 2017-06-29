@@ -40,7 +40,7 @@ def main():
                 op = 'update and query'
             else:
                 op = 'update'
-            output = "%s: average time = %f (ms)" %(op, statistics.mean(times))
+            output = "%s: average time = %f (ms)\n" %(op, statistics.mean(times))
          #   if sys.argv[2] > 1:
         #        output = output + ", standard deviation = %f (ms)\n" %(statistics.stdev(times))
             file.write(output)
