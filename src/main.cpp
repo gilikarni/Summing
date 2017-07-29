@@ -332,12 +332,12 @@ int main(int argc, char* argv[])
 						"Update with packet size: " << packetSize);
 			}
 
-			if (!is_calc_times || is_exact)
+			if ((!is_calc_times && !is_calc_times_update) || is_exact)
 			{
 				exactSumming.update(packetSize);
 			}
 
-			if (!is_calc_times || is_exact_slack)
+			if ((!is_calc_times && !is_calc_times_update) || is_exact_slack)
 			{
 				exactSlackSumming.update(packetSize);
 			}
@@ -362,89 +362,92 @@ int main(int argc, char* argv[])
 				mulMistake.update(packetSize);
 			}
 
-			double exactSum = 0;
-			if ((!is_calc_times || is_exact) && !is_calc_times_update)
+			if (!is_calc_times_update)
 			{
-				exactSum = exactSumming.query();
-			}
-
-			if (is_exact && is_print_query)
-			{
-				printLogsToFile(main_outputFile, "Exact sum = " << exactSum);
-			}
-
-			double exactSlackSum = 0;
-			if ((!is_calc_times  || is_exact_slack) && !is_calc_times_update)
-			{
-				exactSlackSum = exactSlackSumming.query(windowSizeMistake);
-			}
-
-			if (is_exact_slack)
-			{
-				devExactSlack += abs(exactSlackSum - exactSum);
-
-				windowDevExact += windowSizeMistake;
-				if (is_print_query)
+				double exactSum = 0;
+				if (!is_calc_times || is_exact)
 				{
-					printLogsToFile(main_outputFile,
-							"Exact sum with slack window = " << exactSlackSum <<
-							", window size slackiness = " << windowSizeMistake);
+					exactSum = exactSumming.query();
 				}
-			}
 
-			if(is_add_slack && !is_calc_times_update)
-			{
-				double addSalckSum = addSlackMistake.query(windowSizeMistake);
-
-				devAddSlack += abs(addSalckSum - exactSlackSum);
-
-				windowDevAdd += windowSizeMistake;
-				if (is_print_query)
+				if (is_exact && is_print_query)
 				{
-					printLogsToFile(main_outputFile,
-							"Sum with additive mistake slack window = " << addSalckSum <<
-							", window size slackiness = " << windowSizeMistake);
+					printLogsToFile(main_outputFile, "Exact sum = " << exactSum);
 				}
-			}
 
-			if(is_mul_slack && !is_calc_times_update)
-			{
-				double mulSlackSum = mulSlack.query(windowSizeMistake);
-
-				devMulSlack += abs(mulSlackSum - exactSlackSum) / exactSlackSum;
-
-				windowDevMul += windowSizeMistake;
-
-				if (is_print_query)
+				double exactSlackSum = 0;
+				if (!is_calc_times  || is_exact_slack)
 				{
-					printLogsToFile(main_outputFile,
-							"Sum with multiplicative slack window = " << mulSlackSum <<
-							", window size slackiness = " << windowSizeMistake);
+					exactSlackSum = exactSlackSumming.query(windowSizeMistake);
 				}
-			}
 
-			if (is_add && !is_calc_times_update)
-			{
-				double addSum = addMistake.query();
-
-				devAdd += abs(addSum - exactSum);
-
-				if (is_print_query)
+				if (is_exact_slack)
 				{
-					printLogsToFile(main_outputFile, "Sum with additive mistake = "
-							<< addSum << ", window size slackiness = " << windowSizeMistake);
+					devExactSlack += abs(exactSlackSum - exactSum);
+
+					windowDevExact += windowSizeMistake;
+					if (is_print_query)
+					{
+						printLogsToFile(main_outputFile,
+								"Exact sum with slack window = " << exactSlackSum <<
+								", window size slackiness = " << windowSizeMistake);
+					}
 				}
-			}
 
-			if (is_mul && !is_calc_times_update)
-			{
-				double mulSum = mulMistake.query();
-				devMul += abs(mulSum - exactSum) / exactSum;
-				if (is_print_query)
+				if(is_add_slack)
 				{
-					printLogsToFile(main_outputFile,
-							"Sum with multiplicative mistake = " << mulSum <<
-							", window size slackiness = " << windowSizeMistake);
+					double addSalckSum = addSlackMistake.query(windowSizeMistake);
+
+					devAddSlack += abs(addSalckSum - exactSlackSum);
+
+					windowDevAdd += windowSizeMistake;
+					if (is_print_query)
+					{
+						printLogsToFile(main_outputFile,
+								"Sum with additive mistake slack window = " << addSalckSum <<
+								", window size slackiness = " << windowSizeMistake);
+					}
+				}
+
+				if(is_mul_slack)
+				{
+					double mulSlackSum = mulSlack.query(windowSizeMistake);
+
+					devMulSlack += abs(mulSlackSum - exactSlackSum) / exactSlackSum;
+
+					windowDevMul += windowSizeMistake;
+
+					if (is_print_query)
+					{
+						printLogsToFile(main_outputFile,
+								"Sum with multiplicative slack window = " << mulSlackSum <<
+								", window size slackiness = " << windowSizeMistake);
+					}
+				}
+
+				if (is_add)
+				{
+					double addSum = addMistake.query();
+
+					devAdd += abs(addSum - exactSum);
+
+					if (is_print_query)
+					{
+						printLogsToFile(main_outputFile, "Sum with additive mistake = "
+								<< addSum << ", window size slackiness = " << windowSizeMistake);
+					}
+				}
+
+				if (is_mul)
+				{
+					double mulSum = mulMistake.query();
+					devMul += abs(mulSum - exactSum) / exactSum;
+					if (is_print_query)
+					{
+						printLogsToFile(main_outputFile,
+								"Sum with multiplicative mistake = " << mulSum <<
+								", window size slackiness = " << windowSizeMistake);
+					}
 				}
 			}
 		}
