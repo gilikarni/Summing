@@ -30,6 +30,7 @@ file << "(" << __FILE__ << ", line " << __LINE__ << "): " << output << std::endl
 
 double roundV(
 	const double& z,
-	const uint64_t& v);
+	const uint64_t& powV,
+	const double& v);
 
 #endif /* UTILS_H_ */

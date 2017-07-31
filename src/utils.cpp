@@ -23,10 +23,45 @@
 */
 double roundV(
 		const double& z,
-		const uint64_t& powV)
+		const uint64_t& powV,
+		const double& v)
 {
-	double closestInteger = round(z*powV);
-	double zz = closestInteger / powV;
+	if (0 == z)
+	{
+		return z;
+	}
+
+	double zz = 0;
+	double roundZ = round(z);
+
+	/* Found out if z is bigger than 1 */
+	if (roundZ > 0)
+	{
+		/* z is bigger than 1 */
+		double logRoundz = log(roundZ)/log(2);
+		if (logRoundz > v)
+		{
+			double roundingPower = logRoundz - v;
+			double powRound = pow(2, roundingPower);
+			zz = z / powRound;
+			zz = round(zz);
+			zz *= powRound;
+		}
+		else if (0 == logRoundz)
+		{
+			zz = round(z);
+		}
+		else
+		{
+			double closestInteger = round(z*powV);
+			zz = closestInteger / powV;
+		}
+	}
+	else
+	{
+		double closestInteger = round(z*powV);
+		zz = closestInteger / powV;
+	}
 
 	return zz;
 }

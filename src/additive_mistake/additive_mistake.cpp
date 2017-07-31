@@ -60,7 +60,7 @@ AdditiveMistake::AdditiveMistake(
 void AdditiveMistake::update(const uint64_t& packatSize)
 {
 	static double powV = pow(2,v);
-	double xx = roundV((double)packatSize / range, powV); /* x' */
+	double xx = roundV((double)packatSize / range, powV, v); /* x' */
 
 	if (bLargeEpsilon)
 	{
