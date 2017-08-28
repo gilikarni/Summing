@@ -91,3 +91,22 @@ double ExactSlackSumming::query(uint64_t& windowSizeMistake) const
 
 	return mean;
 }
+
+/*
+ * Function name: ExactSlackSumming::getSize
+ *
+ * Description:
+ *  TODO
+ *
+ * Parameters:
+ *  None
+ *
+ * Return values:
+ *  TODO
+*/
+uint64_t ExactSlackSumming::getSize() const
+{
+	return sizeof(range) + sizeof(window) + sizeof(sum) + sizeof(elements) +
+			elements.size()*sizeof(uint64_t) + sizeof(lastElements) + sizeof(diff) +
+			sizeof(tau) + sizeof(blockSize);
+}
