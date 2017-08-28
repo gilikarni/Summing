@@ -107,7 +107,7 @@ public:
 
     double query() const;
 
-    uint64_t getSizeOneByOne() const;
+    uint64_t getSize() const;
 };
 
 #endif

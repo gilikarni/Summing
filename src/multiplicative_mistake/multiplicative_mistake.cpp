@@ -247,23 +247,6 @@ double MultiplicativeMistake::query() const
 }
 
 /*
- * Function name: MultiplicativeMistake::getSize
- *
- * Description:
- *  Return the size of the object MultiplicativeMistake
- *
- * Parameters:
- *  None
- *
- * Return values:
- *  The size of the object
- */
-uint64_t MultiplicativeMistake::getSize() const
-{
-	return sizeof(*this);
-}
-
-/*
  * Function name: MultiplicativeMistake::getSizeOneByOne
  *
  * Description:
@@ -275,7 +258,7 @@ uint64_t MultiplicativeMistake::getSize() const
  * Return values:
  *  The size of the object
  */
-uint64_t MultiplicativeMistake::getSizeOneByOne() const
+uint64_t MultiplicativeMistake::getSize() const
 {
 	return basic.getSizeOneByOne();
 }
