@@ -109,7 +109,26 @@ double AdditiveMistake::query() const
 			blockIndex*subSum + constant);
 }
 
-
+/*
+ * Function name: AdditiveMistake::getSize
+ *
+ * Description:
+ *  TODO
+ *
+ * Parameters:
+ *  None
+ *
+ * Return values:
+ *  TODO
+*/
+uint64_t AdditiveMistake::getSize() const
+{
+	return sizeof(range) + sizeof(window) + sizeof(sum) + sizeof(elements) +
+			elements.size()*sizeof(bool) + sizeof(lastElements) +
+			lastElements.size()*sizeof(double) + sizeof(subSum) +
+			sizeof(v) + sizeof(blockSize) + sizeof(epsilon) + sizeof(bitSetIndex) +
+			sizeof(blockIndex) + sizeof(bLargeEpsilon);
+}
 
 
 

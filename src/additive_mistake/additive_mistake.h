@@ -68,6 +68,8 @@ public:
     void update(const uint64_t& packatSize);
 
     double query() const;
+
+    uint64_t getSize() const;
 };
 
 #endif
