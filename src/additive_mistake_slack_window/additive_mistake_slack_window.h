@@ -71,6 +71,8 @@ public:
     void update(const uint16_t& packetSize);
 
     double query(uint64_t& windowSizeMistake) const;
+
+    uint64_t getSize() const;
 };
 
 #endif

@@ -34,7 +34,7 @@ AdditiveSlackMistake::AdditiveSlackMistake(
 	}
 }
 
-/* Destrucrors */
+/* Destructors */
 
 AdditiveSlackMistake::~AdditiveSlackMistake()
 {
@@ -96,4 +96,25 @@ double AdditiveSlackMistake::query(uint64_t& windowSizeMistake) const
 	windowSizeMistake = diff;
 
 	return resultSum;
+}
+
+/*
+ * Function name: AdditiveSlackMistake::getSize
+ *
+ * Description:
+ *  TODO
+ *
+ * Parameters:
+ *  None
+ *
+ * Return values:
+ *  TODO
+*/
+uint64_t AdditiveSlackMistake::getSize() const
+{
+	return sizeof(range) + sizeof(window) + sizeof(sum)
+			+ sizeof(blockSize) + sizeof(epsilon) + sizeof(tau) +
+			sizeof(currentSum) + sizeof(blockSums) +
+			blockSums.size()*sizeof(double) + sizeof(sum) +
+			sizeof(diff) + sizeof(v1) + sizeof(v2) + sizeof(blockSize);
 }
