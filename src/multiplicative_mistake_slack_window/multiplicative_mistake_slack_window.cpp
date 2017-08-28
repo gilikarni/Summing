@@ -167,3 +167,22 @@ double MultiplicativeMistakeSlackSumming::query(uint64_t& windowSizeMistake) con
 	return sum + lastElements;
 }
 
+/*
+ * Function name: MultiplicativeMistakeSlackSumming::getSize
+ *
+ * Description:
+ *  Return the size of the object MultiplicativeMistakeSlackSumming
+ *
+ * Parameters:
+ *  None
+ *
+ * Return values:
+ *  The size of the object
+ */
+uint64_t MultiplicativeMistakeSlackSumming::getSize() const
+{
+	return sizeof(range) + sizeof(window) + sizeof(sum) + sizeof(tau) +
+			sizeof(epsilon) + sizeof(lastElements) + sizeof(elements) +
+			elements.size() * sizeof(double) + sizeof(diff) + sizeof(blockSize);
+}
+
