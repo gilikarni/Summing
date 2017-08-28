@@ -75,3 +75,21 @@ double ExactSumming::query() const
 {
 	return sum;
 }
+
+/*
+ * Function name: ExactSumming::getSize
+ *
+ * Description:
+ *  TODO
+ *
+ * Parameters:
+ *  None
+ *
+ * Return values:
+ *  TODO
+*/
+uint64_t ExactSumming::getSize() const
+{
+	return sizeof(range) + sizeof(window) + sizeof(sum) +
+			sizeof(elements) + (elements.size() * sizeof(uint16_t));
+}
