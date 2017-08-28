@@ -156,6 +156,26 @@ double BasicCounting::query() const
 	return totalSum - (lastSum / 2);
 }
 
+/*
+ * Function name: BasicCounting::getSizeOneByOne
+ *
+ * Description:
+ *  Return the size of the object MultiplicativeMistake
+ *
+ * Parameters:
+ *  None
+ *
+ * Return values:
+ *  The size of the object
+ */
+uint64_t BasicCounting::getSizeOneByOne() const
+{
+	return sizeof(window) + sizeof(lastArrivalTime) + sizeof(expiryTime) +
+			sizeof(totalSum) + sizeof(totalSum) + sizeof(k) + sizeof(EH) +
+			EH.size()*sizeof( pair<uint64_t, uint64_t>) +
+			sizeof(bucketHistogram) + bucketHistogram.size()*sizeof(uint64_t)*2;
+}
+
 /*****************************End of BasicCounting*****************************/
 
 /*****************************MultiplicativeMistake****************************/
@@ -179,7 +199,7 @@ MultiplicativeMistake::~MultiplicativeMistake()
 /* API: */
 
 /*
- * Function name: BasicCounting::update
+ * Function name: MultiplicativeMistake::update
  *
  * Description:
  *  Update the sum of the sliding window. Add to the BasicCounting object
@@ -210,7 +230,7 @@ void MultiplicativeMistake::update(const uint16_t& packetSize)
 }
 
 /*
- * Function name: BasicCounting::query
+ * Function name: MultiplicativeMistake::query
  *
  * Description:
  *  Return the sum of the window
@@ -220,10 +240,44 @@ void MultiplicativeMistake::update(const uint16_t& packetSize)
  *
  * Return values:
  *  The sum
-*/
+ */
 double MultiplicativeMistake::query() const
 {
 	return basic.query();
+}
+
+/*
+ * Function name: MultiplicativeMistake::getSize
+ *
+ * Description:
+ *  Return the size of the object MultiplicativeMistake
+ *
+ * Parameters:
+ *  None
+ *
+ * Return values:
+ *  The size of the object
+ */
+uint64_t MultiplicativeMistake::getSize() const
+{
+	return sizeof(*this);
+}
+
+/*
+ * Function name: MultiplicativeMistake::getSizeOneByOne
+ *
+ * Description:
+ *  Return the size of the object MultiplicativeMistake
+ *
+ * Parameters:
+ *  None
+ *
+ * Return values:
+ *  The size of the object
+ */
+uint64_t MultiplicativeMistake::getSizeOneByOne() const
+{
+	return basic.getSizeOneByOne();
 }
 
 /**************************End of MultiplicativeMistake************************/

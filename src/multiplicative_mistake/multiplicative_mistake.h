@@ -77,6 +77,8 @@ public:
     void updateTimeStamps();
 
     double query() const;
+
+    uint64_t getSizeOneByOne() const;
 };
 
 class MultiplicativeMistake
@@ -104,6 +106,8 @@ public:
     void update(const uint16_t& packetSize);
 
     double query() const;
+
+    uint64_t getSizeOneByOne() const;
 };
 
 #endif
