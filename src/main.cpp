@@ -501,11 +501,17 @@ int main(int argc, char* argv[])
 				(double)(runtime.count()) / (double)numberOfElements << std::endl;
 	}
 
-	std::cout << "The size of total multiplicative mistake is " << mulMistake.getSizeOneByOne() << std::endl;
+	std::cout << "The size of mulMistake is " << mulMistake.getSize() << "B" << std::endl;
 
-	std::cout << "The size of addMistake is " << addMistake.getSize() << std::endl;
+	std::cout << "The size of addMistake is " << addMistake.getSize() << "B" << std::endl;
 
-	std::cout << "The size of addSlackMistake is " << addSlackMistake.getSize() << std::endl;
+	std::cout << "The size of addSlackMistake is " << addSlackMistake.getSize() << "B" << std::endl;
+
+	std::cout << "The size of addSlackMistake is " << mulSlack.getSize() << "B" << std::endl;
+
+	std::cout << "The size of addSlackMistake is " << exactSumming.getSize() << "B" << std::endl;
+
+	std::cout << "The size of addSlackMistake is " << exactSlackSumming.getSize() << "B" << std::endl;
 
 	return 0;
 }
