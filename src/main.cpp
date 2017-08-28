@@ -500,6 +500,13 @@ int main(int argc, char* argv[])
 		main_outputFile << "Average time (in milliseconds) = " <<
 				(double)(runtime.count()) / (double)numberOfElements << std::endl;
 	}
+
+	std::cout << "The size of total multiplicative mistake is " << mulMistake.getSizeOneByOne() << std::endl;
+
+	std::cout << "The size of addMistake is " << addMistake.getSize() << std::endl;
+
+	std::cout << "The size of addSlackMistake is " << addSlackMistake.getSize() << std::endl;
+
 	return 0;
 }
 
