@@ -247,7 +247,7 @@ double MultiplicativeMistake::query() const
 }
 
 /*
- * Function name: MultiplicativeMistake::getSizeOneByOne
+ * Function name: MultiplicativeMistake::getSize
  *
  * Description:
  *  Return the size of the object MultiplicativeMistake
