@@ -78,4 +78,4 @@ clean:
 	rm -rf ${OBJDIR}/multiplicative_mistake
 	rm -rf ${OBJDIR}/multiplicative_mistake_slack_window
 	rm -rf ${OBJDIR}/parser
-	rm -f ${SRCDIR}/output.txt
+	rm -f ${SRCDIR}/*.txt

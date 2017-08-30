@@ -297,15 +297,25 @@ int main(int argc, char* argv[])
 		throw std::bad_alloc();
 	}
 
-	#define X(_paramName, ...) 													\
-		_paramName##SizeOutputFile.open( 										\
-				#_paramName"SizeOutput", 										\
-				std::ofstream::out | std::ofstream::app); 						\
-		if (!_paramName##SizeOutputFile || !_paramName##SizeOutputFile.good()) 	\
-		{ 																		\
-			std::cout << "Could not open " << #_paramName << "SizeOutput in " 	\
-					<< __FILE__ << std::endl; 									\
-			throw std::bad_alloc(); 											\
+	#define X(_paramName, ...) 														\
+		_paramName##SizeOutputFile.open( 											\
+				#_paramName"SizeOutput.txt", 										\
+				std::ofstream::out | std::ofstream::app); 							\
+		if (!_paramName##SizeOutputFile || !_paramName##SizeOutputFile.good()) 		\
+		{ 																			\
+			std::cout << "Could not open " << #_paramName << "SizeOutput.txt in " 	\
+					<< __FILE__ << std::endl; 										\
+			throw std::bad_alloc(); 												\
+		}																			\
+		_paramName##MistakeOutputFile.open( 										\
+				#_paramName"MistakeOutput.txt",										\
+				std::ofstream::out | std::ofstream::app); 							\
+		if (!_paramName##MistakeOutputFile ||										\
+			!_paramName##MistakeOutputFile.good()) 									\
+		{ 																			\
+			std::cout << "Could not open " << #_paramName << "MistakeOutput.txt in "\
+					<< __FILE__ << std::endl; 										\
+			throw std::bad_alloc(); 												\
 		}
 		FLAGS_SUMMING_OPTIONS
 	#undef X
@@ -520,10 +530,8 @@ int main(int argc, char* argv[])
 		#define X(_paramName, ...) 																\
 			if (is_##_paramName)																\
 			{																					\
-				printLogsToFile(std::cout, "The average mistake of " << #_paramName << " is "	\
-				<< dev_##_paramName / numberOfElements  << std::endl);							\
-				printLogsToFile(_paramName##SizeOutputFile,										\
-						(double)_paramName##_total_size / numberOfElements << std::endl);		\
+				_paramName##MistakeOutputFile <<												\
+						(double)dev_##_paramName / numberOfElements << std::endl;		\
 			}
 			FLAGS_SUMMING_OPTIONS;
 		#undef X
@@ -545,10 +553,8 @@ int main(int argc, char* argv[])
 		#define X(_paramName, ...) 																\
 			if (is_##_paramName)																\
 			{																					\
-				printLogsToFile(std::cout, "The average size of " << #_paramName << " is "		\
-				<< (double)_paramName##_total_size / numberOfElements << " bytes" << std::endl);\
-				printLogsToFile(_paramName##SizeOutputFile,										\
-						(double)_paramName##_total_size / numberOfElements << std::endl);		\
+				_paramName##SizeOutputFile <<													\
+						(double)_paramName##_total_size / numberOfElements << std::endl;		\
 			}
 			FLAGS_SUMMING_OPTIONS;
 		#undef X
