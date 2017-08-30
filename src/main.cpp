@@ -34,6 +34,7 @@ using std::ifstream;
 
 #define INPUT_FILE_NAME "traces_by_size_only"
 #define CONF_FILE_NAME "conf"
+#define UNUSED(x) (void)(x)
 
 /* A table of the flags to be entered from the user and have a value.
  * First parameter is the flag's name.
@@ -51,15 +52,18 @@ X(iterations,	"The allowed number of iterations"											)
  * Second parameter is the flag's descriptor.
  */
 #define FLAGS_WITHOUT_VALUE_TABLE \
+X(calc_times,			"Calculate the average time, can calculate only for only one algorithm at a time."	) \
+X(calc_times_update,	"Calculate the average time, can calculate only for only one algorithm at a time."	) \
+X(print_query,			"Print the sum that was queried (works only if the input is not too large)"			) \
+X(calc_size,			"Calculate the average size of each class"											)
+
+#define FLAGS_SUMMING_OPTIONS \
 X(mul,					"Calculate with a multiplicative mistake"											) \
 X(add,					"Calculate with an additive mistake"												) \
 X(mul_slack,			"Calculate with a multiplicative mistake and a slack window size"					) \
 X(add_slack,			"Calculate with an additive mistake and a slack window size"						) \
 X(exact,				"Calculate the exact sum"															) \
-X(exact_slack,			"Calculate the exact sum on a slack window"											) \
-X(calc_times,			"Calculate the average time, can calculate only for only one algorithm at a time."	) \
-X(calc_times_update,	"Calculate the average time, can calculate only for only one algorithm at a time."	) \
-X(print_query,			"Print the sum that was queried (works only if the input is not too large)"			)
+X(exact_slack,			"Calculate the exact sum on a slack window"											)
 
 /* A table of the flags to be entered from the user and leads to a callback to be called.
  * First parameter is the flag's name.
@@ -72,23 +76,22 @@ X(help,			"Print optional parameters",	printHelp	)
 /* Globals: */
 
 std::ofstream main_outputFile;
+
+/* Generate the size file objects */
+#define X(_paramName, ...) \
+	std::ofstream _paramName##SizeOutputFile;
+	FLAGS_SUMMING_OPTIONS
+#undef X
+
+/* Generate the size file objects */
+#define X(_paramName, ...) \
+	std::ofstream _paramName##MistakeOutputFile;
+	FLAGS_SUMMING_OPTIONS
+#undef X
+
+/* Generate variable to contain the value */
 #define X(_paramName, ...) \
 	double _paramName;
-	FLAGS_WITH_VALUE_TABLE
-#undef X
-
-#define X(_paramName, ...) \
-	string _paramName##Flag;
-	FLAGS_WITHOUT_VALUE_TABLE
-#undef X
-
-#define X(_paramName, ...) \
-	string _paramName##Flag;
-	FLAGS_WITH_CALLBACK_TABLE
-#undef X
-
-#define X(_paramName, ...) \
-	string _paramName##Flag;
 	FLAGS_WITH_VALUE_TABLE
 #undef X
 
@@ -111,6 +114,14 @@ void printHelp()
 	std::cout << "The parameters are:" << std::endl << "(Defult parameters configurable in "
 			<< CONF_FILE_NAME << ")" << std::endl << std::endl;
 	std::cout << std::setfill( ' ' );
+
+	#define X(_paramName, _paramDescription) \
+		std::cout << std::setw(2) << right << "--" << #_paramName << \
+		std::setw(20 - 1 - string(#_paramName).size()) << \
+		" " << std::setw(20) << _paramDescription << std::endl;
+		FLAGS_SUMMING_OPTIONS;
+	#undef X
+
 	#define X(_paramName, _paramDescription) \
 		std::cout << std::setw(2) << right << "--" << #_paramName << \
 		std::setw(20 - 1 - string(#_paramName).size()) << \
@@ -145,7 +156,12 @@ int main(int argc, char* argv[])
 
 	#define X(_paramName, ...) \
 		bool is_##_paramName = false;
-		FLAGS_WITHOUT_VALUE_TABLE
+		FLAGS_WITHOUT_VALUE_TABLE;
+	#undef X
+
+	#define X(_paramName, ...) \
+		bool is_##_paramName = false;
+		FLAGS_SUMMING_OPTIONS;
 	#undef X
 
 	while (!confFile.eof())
@@ -178,7 +194,16 @@ int main(int argc, char* argv[])
 				bAlgoDefined = true;								\
 				numberOfMatches++;									\
 			}
-			FLAGS_WITHOUT_VALUE_TABLE
+			FLAGS_SUMMING_OPTIONS;
+		#undef X
+
+		#define X(_paramName, ...) 									\
+			if (!arg.compare(string("--") + string(#_paramName))) 	\
+			{ 														\
+				is_##_paramName = true;								\
+				numberOfMatches++;									\
+			}
+			FLAGS_WITHOUT_VALUE_TABLE;
 		#undef X
 
 		#define X(_paramName, _paramDescription, callback) 			\
@@ -187,7 +212,7 @@ int main(int argc, char* argv[])
 				callback();											\
 				numberOfMatches++;									\
 			}
-			FLAGS_WITH_CALLBACK_TABLE
+			FLAGS_WITH_CALLBACK_TABLE;
 		#undef X
 
 		#define X(_paramName, ...) \
@@ -197,7 +222,7 @@ int main(int argc, char* argv[])
 				_paramName = atof(argv[argIdx]);					\
 				numberOfMatches++;									\
 			}
-			FLAGS_WITH_VALUE_TABLE
+			FLAGS_WITH_VALUE_TABLE;
 		#undef X
 
 		if (numberOfMatches == 0)
@@ -208,7 +233,8 @@ int main(int argc, char* argv[])
 
 	}
 
-	if (!bAlgoDefined || is_print_query)
+	/* If no summing algorithm was defined all the algorithms should run */
+	if (!bAlgoDefined)
 	{
 		confFile.clear();
 		confFile.seekg(0, confFile.beg);
@@ -225,11 +251,12 @@ int main(int argc, char* argv[])
 					numberOfAlgorithms++;								\
 					is_##_paramName = true;								\
 				}
-				FLAGS_WITHOUT_VALUE_TABLE
+				FLAGS_SUMMING_OPTIONS;
 			#undef X
 		}
 	}
 
+	/* Only one algorithm can run while calculating times */
 	if (is_calc_times || is_calc_times_update)
 	{
 		int numberOfAlgorithms = 0;
@@ -239,10 +266,10 @@ int main(int argc, char* argv[])
 			{ 														\
 				numberOfAlgorithms++;								\
 			}
-			FLAGS_WITHOUT_VALUE_TABLE
+			FLAGS_SUMMING_OPTIONS;
 		#undef X
 
-		if (numberOfAlgorithms != 2)
+		if (numberOfAlgorithms > 1)
 		{
 			std::cout << "More then one algorithm was specified for speed check."
 					<< std::endl;
@@ -270,6 +297,19 @@ int main(int argc, char* argv[])
 		throw std::bad_alloc();
 	}
 
+	#define X(_paramName, ...) 													\
+		_paramName##SizeOutputFile.open( 										\
+				#_paramName"SizeOutput", 										\
+				std::ofstream::out | std::ofstream::app); 						\
+		if (!_paramName##SizeOutputFile || !_paramName##SizeOutputFile.good()) 	\
+		{ 																		\
+			std::cout << "Could not open " << #_paramName << "SizeOutput in " 	\
+					<< __FILE__ << std::endl; 									\
+			throw std::bad_alloc(); 											\
+		}
+		FLAGS_SUMMING_OPTIONS
+	#undef X
+
 	std::stringstream ss;
 
 	ss << "Starting to sum, with parameters:" << std::endl;
@@ -284,19 +324,33 @@ int main(int argc, char* argv[])
 		FLAGS_WITHOUT_VALUE_TABLE;
 	#undef X
 
+	#define X(_paramName, _paramDescription) \
+		 ss << #_paramName << " = " << ((is_##_paramName) ? "true" : "false") << std::endl;
+		FLAGS_SUMMING_OPTIONS;
+	#undef X
+
 	printLogsToFile(std::cout, ss.str());
 
-	ExactSumming exactSumming(range, window);
-	ExactSlackSumming exactSlackSumming(range, window, tau);
-	AdditiveSlackMistake addSlackMistake(window, range, tau, epsilon);
-	AdditiveMistake addMistake(range, window, epsilon);
-	MultiplicativeMistakeSlackSumming mulSlack(range, window, tau, epsilon);
-	MultiplicativeMistake mulMistake(range, window, epsilon);
+	ExactSumming exact_summing(range, window);
+	ExactSlackSumming exact_slack_summing(range, window, tau);
+	AdditiveSlackMistake add_slack_summing(window, range, tau, epsilon);
+	AdditiveMistake add_summing(range, window, epsilon);
+	MultiplicativeMistakeSlackSumming mul_slack_summing(range, window, tau, epsilon);
+	MultiplicativeMistake mul_summing(range, window, epsilon);
 
 	int numberOfElements = 0;
 
-	double devExactSlack = 0, devAddSlack = 0, devMulSlack = 0, devAdd = 0,
-			devMul = 0, windowDevExact = 0, windowDevAdd = 0, windowDevMul = 0;
+
+
+	double windowDevExact = 0, windowDevAdd = 0, windowDevMul = 0;
+
+	#define X(_paramName, _paramDescription)  \
+		uint64_t _paramName##_total_size = 0; \
+		double dev_##_paramName = 0;
+		FLAGS_SUMMING_OPTIONS;
+	#undef X
+
+	UNUSED(dev_exact);
 
 	std::vector<uint64_t> sizes;
 
@@ -332,42 +386,37 @@ int main(int argc, char* argv[])
 						"Update with packet size: " << packetSize);
 			}
 
-			if ((!is_calc_times && !is_calc_times_update) || is_exact)
+			/* Update all the running algorithms with the new packet. */
+			#define X(_paramName, _paramDescription) 			\
+				if (is_##_paramName) 							\
+				{ 												\
+					_paramName##_summing.update(packetSize); 	\
+				}
+				FLAGS_SUMMING_OPTIONS;
+			#undef X
+
+			/* If there is no time calculation this values should be
+			 * calculated in order to calculate the mistake.
+			 */
+			if (!is_calc_times && !is_calc_times_update && !is_exact)
 			{
-				exactSumming.update(packetSize);
+				exact_summing.update(packetSize);
 			}
 
-			if ((!is_calc_times && !is_calc_times_update) || is_exact_slack)
+			if (!is_calc_times && !is_calc_times_update && !is_exact_slack)
 			{
-				exactSlackSumming.update(packetSize);
+				exact_slack_summing.update(packetSize);
 			}
 
-			if (is_add_slack)
-			{
-				addSlackMistake.update(packetSize);
-			}
-
-			if (is_mul_slack)
-			{
-				mulSlack.update(packetSize);
-			}
-
-			if (is_add)
-			{
-				addMistake.update(packetSize);
-			}
-
-			if (is_mul)
-			{
-				mulMistake.update(packetSize);
-			}
-
+			/* Only when calculating only the update time we wouldn't want to
+			 * query the status.
+			 */
 			if (!is_calc_times_update)
 			{
 				double exactSum = 0;
 				if (!is_calc_times || is_exact)
 				{
-					exactSum = exactSumming.query();
+					exactSum = exact_summing.query();
 				}
 
 				if (is_exact && is_print_query)
@@ -378,12 +427,12 @@ int main(int argc, char* argv[])
 				double exactSlackSum = 0;
 				if (!is_calc_times  || is_exact_slack)
 				{
-					exactSlackSum = exactSlackSumming.query(windowSizeMistake);
+					exactSlackSum = exact_slack_summing.query(windowSizeMistake);
 				}
 
 				if (is_exact_slack)
 				{
-					devExactSlack += abs(exactSlackSum - exactSum);
+					dev_exact_slack += abs(exactSlackSum - exactSum);
 
 					windowDevExact += windowSizeMistake;
 					if (is_print_query)
@@ -396,9 +445,9 @@ int main(int argc, char* argv[])
 
 				if(is_add_slack)
 				{
-					double addSalckSum = addSlackMistake.query(windowSizeMistake);
+					double addSalckSum = add_slack_summing.query(windowSizeMistake);
 
-					devAddSlack += abs(addSalckSum - exactSlackSum);
+					dev_add_slack += abs(addSalckSum - exactSlackSum);
 
 					windowDevAdd += windowSizeMistake;
 					if (is_print_query)
@@ -411,9 +460,9 @@ int main(int argc, char* argv[])
 
 				if(is_mul_slack)
 				{
-					double mulSlackSum = mulSlack.query(windowSizeMistake);
+					double mulSlackSum = mul_slack_summing.query(windowSizeMistake);
 
-					devMulSlack += abs(mulSlackSum - exactSlackSum) / exactSlackSum;
+					dev_mul_slack += abs(mulSlackSum - exactSlackSum) / exactSlackSum;
 
 					windowDevMul += windowSizeMistake;
 
@@ -427,9 +476,9 @@ int main(int argc, char* argv[])
 
 				if (is_add)
 				{
-					double addSum = addMistake.query();
+					double addSum = add_summing.query();
 
-					devAdd += abs(addSum - exactSum);
+					dev_add += abs(addSum - exactSum);
 
 					if (is_print_query)
 					{
@@ -440,8 +489,8 @@ int main(int argc, char* argv[])
 
 				if (is_mul)
 				{
-					double mulSum = mulMistake.query();
-					devMul += abs(mulSum - exactSum) / exactSum;
+					double mulSum = mul_summing.query();
+					dev_mul += abs(mulSum - exactSum) / exactSum;
 					if (is_print_query)
 					{
 						printLogsToFile(main_outputFile,
@@ -449,6 +498,14 @@ int main(int argc, char* argv[])
 								", window size slackiness = " << windowSizeMistake);
 					}
 				}
+			}
+
+			if (is_calc_size)
+			{
+				#define X(_paramName, ...) \
+					_paramName##_total_size += _paramName##_summing.getSize();
+					FLAGS_SUMMING_OPTIONS;
+				#undef X
 			}
 		}
 
@@ -458,38 +515,18 @@ int main(int argc, char* argv[])
 
 	if (!is_calc_times && !is_calc_times_update)
 	{
-		if (is_exact_slack)
-		{
-			main_outputFile << "Exact summing over a slacky window - "
-			<< devExactSlack / numberOfElements << std::endl;
-			main_outputFile << "window size average mistake - " << windowDevExact / numberOfElements << std::endl;
-		}
+		/* Print average mistakes to screen and file */
 
-		if (is_add_slack)
-		{
-			main_outputFile << "Summing over a slacky window with an additive mistake - "
-			<< devAddSlack /numberOfElements << std::endl;
-			main_outputFile << "window size average mistake - " << windowDevAdd/ numberOfElements << std::endl;
-		}
-
-		if (is_mul_slack)
-		{
-			main_outputFile << "Summing over a slacky window with a multiplicative mistake - "
-			<< devMulSlack /numberOfElements << std::endl;
-			main_outputFile << "window size average mistake - " << windowDevMul / numberOfElements << std::endl;
-		}
-
-		if (is_add)
-		{
-			main_outputFile << "Summing over an exact window with an additive mistake - "
-			<< devAdd / numberOfElements << std::endl;
-		}
-
-		if (is_mul)
-		{
-			main_outputFile << "Summing over an exact window with a multiplicative mistake - "
-			<< devMul /numberOfElements << std::endl;
-		}
+		#define X(_paramName, ...) 																\
+			if (is_##_paramName)																\
+			{																					\
+				printLogsToFile(std::cout, "The average mistake of " << #_paramName << " is "	\
+				<< dev_##_paramName / numberOfElements  << std::endl);							\
+				printLogsToFile(_paramName##SizeOutputFile,										\
+						(double)_paramName##_total_size / numberOfElements << std::endl);		\
+			}
+			FLAGS_SUMMING_OPTIONS;
+		#undef X
 
 		std::cout << std::endl;
 	}
@@ -501,17 +538,21 @@ int main(int argc, char* argv[])
 				(double)(runtime.count()) / (double)numberOfElements << std::endl;
 	}
 
-	std::cout << "The size of mulMistake is " << mulMistake.getSize() << "B" << std::endl;
+	/* Print average sizes to screen and file */
 
-	std::cout << "The size of addMistake is " << addMistake.getSize() << "B" << std::endl;
-
-	std::cout << "The size of addSlackMistake is " << addSlackMistake.getSize() << "B" << std::endl;
-
-	std::cout << "The size of addSlackMistake is " << mulSlack.getSize() << "B" << std::endl;
-
-	std::cout << "The size of addSlackMistake is " << exactSumming.getSize() << "B" << std::endl;
-
-	std::cout << "The size of addSlackMistake is " << exactSlackSumming.getSize() << "B" << std::endl;
+	if (is_calc_size)
+	{
+		#define X(_paramName, ...) 																\
+			if (is_##_paramName)																\
+			{																					\
+				printLogsToFile(std::cout, "The average size of " << #_paramName << " is "		\
+				<< (double)_paramName##_total_size / numberOfElements << " bytes" << std::endl);\
+				printLogsToFile(_paramName##SizeOutputFile,										\
+						(double)_paramName##_total_size / numberOfElements << std::endl);		\
+			}
+			FLAGS_SUMMING_OPTIONS;
+		#undef X
+	}
 
 	return 0;
 }
